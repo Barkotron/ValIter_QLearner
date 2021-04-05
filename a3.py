@@ -1,7 +1,10 @@
 import re
 
+#global variables for now, we may do something else with them
 HORIZONTAL = 0
 VERTICAL = 0
+TERMINAL = []
+BOULDER = []
 K = 0
 EPISODES = 0
 DISCOUNT = 0
@@ -16,8 +19,8 @@ def readInput(filename='gridConf.txt'):
     print(f"Line: {line}")
     parseLine(line)
     
-
 def parseLine(line):
+
   # remove everything that isn't a title or value
   tokens = re.split('=|\n|\s|,|{|}',line)
 
@@ -28,6 +31,7 @@ def parseLine(line):
   except ValueError:
     pass
 
+  #title is always the first element
   field = tokens[0]
 
   if field == 'Horizontal':
@@ -37,11 +41,16 @@ def parseLine(line):
     global VERTICAL
     VERTICAL = tokens[1]
   elif field == 'Terminal':
-    pass
+    for i in range(1,len(tokens),4):
+      global TERMINAL
+      TERMINAL.append([tokens[i+1],tokens[i+2],tokens[i+3]])
   elif field == 'Boulder':
-    pass
+    for i in range(1,len(tokens),3):
+      global BOULDER
+      BOULDER.append([tokens[i+1],tokens[i+2]])
   elif field == 'RobotStartState':
-    pass
+    global ROBOTSTARTSTATE
+    ROBOTSTARTSTATE = [tokens[1],tokens[2]]
   elif field == 'K':
     global K
     K = tokens[1]
@@ -62,24 +71,18 @@ def parseLine(line):
 
   print(tokens)
 
-
-
-
 def tests():
   print("---Global Variables---")
   print(f"Horizontal: {HORIZONTAL}")
   print(f"Vertical: {VERTICAL}")
-  print(f"Terminal: {0}")
-  print(f"Boulder: {0}")
-  print(f"RobotStartState: {0}")
+  print(f"Terminal: {TERMINAL}")
+  print(f"Boulder: {BOULDER}")
+  print(f"RobotStartState: {ROBOTSTARTSTATE}")
   print(f"K: {K}")
   print(f"Episodes: {EPISODES}")
   print(f"Discount: {DISCOUNT}")
   print(f"Noise: {NOISE}")
   print(f"TransitionCost: {TRANSITION_COST}")
-
-readInput('gridConf.txt')
-tests()
 
 class ValueIterationAgent():
   """
@@ -132,3 +135,7 @@ class ValueIterationAgent():
 
   def getAction(self, state):
     "Returns the policy at the state (no exploration)."
+
+
+readInput('gridConf.txt')
+tests()
