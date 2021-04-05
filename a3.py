@@ -1,5 +1,85 @@
+import re
+
+HORIZONTAL = 0
+VERTICAL = 0
+K = 0
+EPISODES = 0
+DISCOUNT = 0
+NOISE = 0
+TRANSITION_COST = 0
 
 
+def readInput(filename='gridConf.txt'):
+
+  read = open(filename)
+  for line in read:
+    print(f"Line: {line}")
+    parseLine(line)
+    
+
+def parseLine(line):
+  # remove everything that isn't a title or value
+  tokens = re.split('=|\n|\s|,|{|}',line)
+
+  #remove all '' (empty strings) that result from split()
+  try:
+    while True:
+        tokens.remove('')
+  except ValueError:
+    pass
+
+  field = tokens[0]
+
+  if field == 'Horizontal':
+    global HORIZONTAL
+    HORIZONTAL = tokens[1]
+  elif field == 'Vertical':
+    global VERTICAL
+    VERTICAL = tokens[1]
+  elif field == 'Terminal':
+    pass
+  elif field == 'Boulder':
+    pass
+  elif field == 'RobotStartState':
+    pass
+  elif field == 'K':
+    global K
+    K = tokens[1]
+  elif field == 'Episodes':
+    global EPISODES
+    EPISODES = tokens[1]
+  elif field == 'Discount':
+    global DISCOUNT
+    DISCOUNT = tokens[1]
+  elif field == 'Noise':
+    global NOISE
+    NOISE = tokens[1]
+  elif field == 'TransitionCost':
+    global TRANSITION_COST
+    TRANSITION_COST = tokens[1]
+  else:
+    print("Unknown Field")
+
+  print(tokens)
+
+
+
+
+def tests():
+  print("---Global Variables---")
+  print(f"Horizontal: {HORIZONTAL}")
+  print(f"Vertical: {VERTICAL}")
+  print(f"Terminal: {0}")
+  print(f"Boulder: {0}")
+  print(f"RobotStartState: {0}")
+  print(f"K: {K}")
+  print(f"Episodes: {EPISODES}")
+  print(f"Discount: {DISCOUNT}")
+  print(f"Noise: {NOISE}")
+  print(f"TransitionCost: {TRANSITION_COST}")
+
+readInput('gridConf.txt')
+tests()
 
 class ValueIterationAgent():
   """
