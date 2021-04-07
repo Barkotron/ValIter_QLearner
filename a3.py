@@ -7,6 +7,7 @@ TERMINAL = []
 BOULDER = []
 K = 0
 EPISODES = 0
+ALPHA = 0
 DISCOUNT = 0
 NOISE = 0
 TRANSITION_COST = 0
@@ -57,6 +58,9 @@ def parseLine(line):
   elif field == 'Episodes':
     global EPISODES
     EPISODES = tokens[1]
+  elif field == 'Alpha':
+    global ALPHA
+    ALPHA = tokens[1]
   elif field == 'Discount':
     global DISCOUNT
     DISCOUNT = tokens[1]
