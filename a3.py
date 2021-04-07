@@ -84,6 +84,7 @@ def tests():
   print(f"RobotStartState: {ROBOTSTARTSTATE}")
   print(f"K: {K}")
   print(f"Episodes: {EPISODES}")
+  print(f"Alpha: {ALPHA}")
   print(f"Discount: {DISCOUNT}")
   print(f"Noise: {NOISE}")
   print(f"TransitionCost: {TRANSITION_COST}")
