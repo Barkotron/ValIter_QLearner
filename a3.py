@@ -6,6 +6,7 @@ HORIZONTAL = 0
 VERTICAL = 0
 TERMINAL = []
 BOULDER = []
+ROBOTSTARTSTATE = 0
 K = 0
 EPISODES = 0
 ALPHA = 0
@@ -26,7 +27,7 @@ def createGrid():
   for term in TERMINAL:
     print(f"Terminal: {term}")
     grid[term[0]][term[1]] = 'T'
-  #grid[0][0] = 'S'
+  grid[ROBOTSTARTSTATE[0]][ROBOTSTARTSTATE[1]] = 'S'
   print(f"grid shape: {grid.shape}")
   print(grid)
   
