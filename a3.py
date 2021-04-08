@@ -14,9 +14,22 @@ NOISE = 0
 TRANSITION_COST = 0
 
 def createGrid():
-  grid = np.zeros(shape=(HORIZONTAL,VERTICAL))
-  print(grid.shape)
+  #grid = np.zeros(shape=(HORIZONTAL,VERTICAL))
+
+  #string version just to see where everything is
+  grid = np.full((HORIZONTAL,VERTICAL),'*',dtype=str)
+
+  for boulder in BOULDER:
+    print(f"Boulder: {boulder}")
+    grid[boulder[0]][boulder[1]] = 'B'
+
+  for term in TERMINAL:
+    print(f"Terminal: {term}")
+    grid[term[0]][term[1]] = 'T'
+  #grid[0][0] = 'S'
+  print(f"grid shape: {grid.shape}")
   print(grid)
+  
 
 def readInput(filename='gridConf.txt'):
 
