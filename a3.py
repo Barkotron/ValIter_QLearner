@@ -1,4 +1,5 @@
 import re
+import numpy as np
 
 #global variables for now, we may do something else with them
 HORIZONTAL = 0
@@ -12,6 +13,10 @@ DISCOUNT = 0
 NOISE = 0
 TRANSITION_COST = 0
 
+def createGrid():
+  grid = np.zeros(shape=(HORIZONTAL,VERTICAL))
+  print(grid.shape)
+  print(grid)
 
 def readInput(filename='gridConf.txt'):
 
@@ -37,39 +42,39 @@ def parseLine(line):
 
   if field == 'Horizontal':
     global HORIZONTAL
-    HORIZONTAL = tokens[1]
+    HORIZONTAL = int(tokens[1])
   elif field == 'Vertical':
     global VERTICAL
-    VERTICAL = tokens[1]
+    VERTICAL = int(tokens[1])
   elif field == 'Terminal':
     for i in range(1,len(tokens),4):
       global TERMINAL
-      TERMINAL.append([tokens[i+1],tokens[i+2],tokens[i+3]])
+      TERMINAL.append([int(tokens[i+1]),int(tokens[i+2]),int(tokens[i+3])])
   elif field == 'Boulder':
     for i in range(1,len(tokens),3):
       global BOULDER
-      BOULDER.append([tokens[i+1],tokens[i+2]])
+      BOULDER.append([int(tokens[i+1]),int(tokens[i+2])])
   elif field == 'RobotStartState':
     global ROBOTSTARTSTATE
-    ROBOTSTARTSTATE = [tokens[1],tokens[2]]
+    ROBOTSTARTSTATE = [int(tokens[1]),int(tokens[2])]
   elif field == 'K':
     global K
-    K = tokens[1]
+    K = int(tokens[1])
   elif field == 'Episodes':
     global EPISODES
-    EPISODES = tokens[1]
+    EPISODES = int(tokens[1])
   elif field == 'Alpha':
     global ALPHA
-    ALPHA = tokens[1]
+    ALPHA = float(tokens[1])
   elif field == 'Discount':
     global DISCOUNT
-    DISCOUNT = tokens[1]
+    DISCOUNT = float(tokens[1])
   elif field == 'Noise':
     global NOISE
-    NOISE = tokens[1]
+    NOISE = float(tokens[1])
   elif field == 'TransitionCost':
     global TRANSITION_COST
-    TRANSITION_COST = tokens[1]
+    TRANSITION_COST = float(tokens[1])
   else:
     print("Unknown Field")
 
@@ -88,6 +93,8 @@ def tests():
   print(f"Discount: {DISCOUNT}")
   print(f"Noise: {NOISE}")
   print(f"TransitionCost: {TRANSITION_COST}")
+
+  createGrid()
 
 class ValueIterationAgent():
   """
