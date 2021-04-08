@@ -6,5 +6,6 @@ RobotStartState={2,4}
 K=1000
 Episodes=3500
 Discount=0.9
+Alpha=0.2
 Noise=0.2
 TransitionCost=-0.1
