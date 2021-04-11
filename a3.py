@@ -188,13 +188,13 @@ class ValueIterationAgent:
             self.grid[i][j][0][0] = (mainProb*(self.transitionCost + (self.discount*self.getValue((i-1,j)))))
             #print(f"thing: {self.getValue((i+1,j))}")
             #print(f"sample val: {(self.grid[i][j][0][0])}")
-          '''if valid:
-            self.grid[i-1][j][1][0] = (mainProb*(self.transitionCost + (self.discount*self.getValue((i,j)))))
           if valid:
-            self.grid[i][j+1][2][0] = (mainProb*(self.transitionCost + (self.discount*self.getValue((i,j)))))
+            self.grid[i][j][1][0] = (mainProb*(self.transitionCost + (self.discount*self.getValue((i+1,j)))))
           if valid:
-            self.grid[i][j-1][3][0] = (mainProb*(self.transitionCost + (self.discount*self.getValue((i,j)))))
-          '''
+            self.grid[i][j][2][0] = (mainProb*(self.transitionCost + (self.discount*self.getValue((i,j-1)))))
+          if valid:
+            self.grid[i][j][3][0] = (mainProb*(self.transitionCost + (self.discount*self.getValue((i,j+1)))))
+          
           #self.grid[i][j] vk1 = max(up,down,left,right)
 
 def main():
@@ -211,7 +211,7 @@ def main():
 
     terminal_states = TERMINAL
     boulder_states = BOULDER
-    num_iterations = 10
+    num_iterations = K
 
     draw_board(window, grid, [row[:-1] for row in terminal_states], boulder_states,
                max_reward(terminal_states), max_punishment(terminal_states), num_iterations)
