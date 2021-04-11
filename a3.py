@@ -1,6 +1,7 @@
 import re
 import numpy as np
 import tkinter as tk
+import copy
 
 #global variables for now, we may do something else with them
 HORIZONTAL = 0
@@ -163,8 +164,12 @@ class ValueIterationAgent:
     print(f"(1,4) val: {self.transitionCost + self.discount*self.getValue((1,5))}")
     #state = self.startState
 
+    
 
-    for iter in range(self.k):
+    for iteration in range(self.k):
+      
+      self.newGrid = copy.deepcopy(self.grid)
+      
       for i in range(rows):
         for j in range(cols):
           
@@ -182,17 +187,16 @@ class ValueIterationAgent:
           # []][][this][] is which of the 4 neighbouring cells it would go to (up,left,down,right)
           # []][][][this] is the value (if it was [1] that would be the arrow)
           if valid: #up
-            self.grid[i][j][0][0] = (mainProb*(self.transitionCost + (self.discount*self.getValue((i+1,j)))))
+            self.newGrid[i][j][0][0] = (mainProb*(self.transitionCost + (self.discount*self.getValue((i+1,j)))))
           if valid:#left
-            self.grid[i][j][1][0] = (mainProb*(self.transitionCost + (self.discount*self.getValue((i,j-1)))))
+            self.newGrid[i][j][1][0] = (mainProb*(self.transitionCost + (self.discount*self.getValue((i,j-1)))))
           if valid:#down
-            self.grid[i][j][2][0] = (mainProb*(self.transitionCost + (self.discount*self.getValue((i-1,j)))))
+            self.newGrid[i][j][2][0] = (mainProb*(self.transitionCost + (self.discount*self.getValue((i-1,j)))))
           if valid:#right
-            self.grid[i][j][3][0] = (mainProb*(self.transitionCost + (self.discount*self.getValue((i,j+1)))))
+            self.newGrid[i][j][3][0] = (mainProb*(self.transitionCost + (self.discount*self.getValue((i,j+1)))))
           
-    '''for row in self.grid:
-      for square in row:
-        print(square)'''
+      self.grid = copy.deepcopy(self.newGrid)
+    
 
 
 def main():
