@@ -69,7 +69,7 @@ def parseLine(line):
   elif field == 'Boulder':
     for i in range(1,len(tokens),3):
       global BOULDER
-      BOULDER.append([int(tokens[i+2]),int(tokens[i+1])])
+      BOULDER.append([int(tokens[i+1]),int(tokens[i+2])])
   elif field == 'RobotStartState':
     global ROBOTSTARTSTATE
     ROBOTSTARTSTATE = [int(tokens[2]),int(tokens[1])]
@@ -177,25 +177,23 @@ class ValueIterationAgent:
           valid = (i+1 < rows and i-1 > 0 and j+1 < cols and j-1 > 0)
           mainProb = (1-self.noise)
 
-          
-
-
           # [this][][][] is the x coord
           # [][this][][] is the y coord
-          # []][][this][] is which of the 4 neighbouring cells it would go to
+          # []][][this][] is which of the 4 neighbouring cells it would go to (up,left,down,right)
           # []][][][this] is the value (if it was [1] that would be the arrow)
-          if valid:
-            self.grid[i][j][0][0] = (mainProb*(self.transitionCost + (self.discount*self.getValue((i-1,j)))))
-            #print(f"thing: {self.getValue((i+1,j))}")
-            #print(f"sample val: {(self.grid[i][j][0][0])}")
-          if valid:
-            self.grid[i][j][1][0] = (mainProb*(self.transitionCost + (self.discount*self.getValue((i+1,j)))))
-          if valid:
-            self.grid[i][j][2][0] = (mainProb*(self.transitionCost + (self.discount*self.getValue((i,j-1)))))
-          if valid:
+          if valid: #up
+            self.grid[i][j][0][0] = (mainProb*(self.transitionCost + (self.discount*self.getValue((i+1,j)))))
+          if valid:#left
+            self.grid[i][j][1][0] = (mainProb*(self.transitionCost + (self.discount*self.getValue((i,j-1)))))
+          if valid:#down
+            self.grid[i][j][2][0] = (mainProb*(self.transitionCost + (self.discount*self.getValue((i-1,j)))))
+          if valid:#right
             self.grid[i][j][3][0] = (mainProb*(self.transitionCost + (self.discount*self.getValue((i,j+1)))))
           
-          #self.grid[i][j] vk1 = max(up,down,left,right)
+    '''for row in self.grid:
+      for square in row:
+        print(square)'''
+
 
 def main():
 
