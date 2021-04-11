@@ -135,16 +135,16 @@ class ValueIterationAgent:
   def getValue(self, state):
     
     # if state we're checking is outside the grid
-    '''if state[0] < 0 or state[0] > len(self.grid) or state[1] < 0 or state[1] > len(self.grid[0]):
-      return 0'''
+    if state[0] < 0 or state[0] > len(self.grid) or state[1] < 0 or state[1] > len(self.grid[0]):
+      return 0
 
-    values = []
-    for val in self.grid[state[0]][state[1]]:
-      #print(f"val: {val} i: {state[0]} j: {state[1]}")
-      #print(f"val[0]: {val[0]}")
-      values.append(val[0])
-
-    return max(values)
+    else:
+      values = []
+      for val in self.grid[state[0]][state[1]]:
+        #print(f"val: {val} i: {state[0]} j: {state[1]}")
+        #print(f"val[0]: {val[0]}")
+        values.append(val[0])
+      return max(values)
     
 
   def getQValue(self, state, action):
@@ -161,7 +161,7 @@ class ValueIterationAgent:
     rows = len(self.grid)  # Number of rows in the grid
     cols = len(self.grid[0])
 
-    print(f"(1,4) val: {self.transitionCost + self.discount*self.getValue((1,5))}")
+    #print(f"(1,4) val: {self.transitionCost + self.discount*self.getValue((1,5))}")
     #state = self.startState
 
     
@@ -189,34 +189,47 @@ class ValueIterationAgent:
           if not terminal_or_boulder:
             up = down = left = right = 0
 
-            valid = (i+1 < rows and i-1 > 0 and j+1 < cols and j-1 > 0)
+            valid = (i+1 < rows and i-1 >= 0 and j+1 < cols and j-1 >= 0)
             mainProb = (1-self.noise)
             noiseProb = self.noise/2
+
+            upValid = i+1 < rows
+            downValid = i-1 >= 0
+            leftValid = j-1 >= 0
+            rightValid = j+1 < cols
 
             # [this][][][] is the x coord
             # [][this][][] is the y coord
             # []][][this][] is which of the 4 neighbouring cells it would go to (up,left,down,right)
-            # []][][][this] is the value (if it was [1] that would be the arrow)
-            if valid: #up
+            # []][][][this] is the value (if it was [1] that would be the arrow since they look like: [0,'↑'])
+            if upValid: #up
               #self.newGrid[i][j][0][0] = (mainProb*(self.transitionCost + (self.discount*self.getValue((i+1,j)))))
               up = (mainProb*(self.transitionCost + (self.discount*self.getValue((i+1,j)))))
-              up += (noiseProb*(self.transitionCost + (self.discount*self.getValue((i,j+1)))))
-              up += (noiseProb*(self.transitionCost + (self.discount*self.getValue((i,j-1)))))
-            if valid:#left
+              if rightValid:
+                up += (noiseProb*(self.transitionCost + (self.discount*self.getValue((i,j+1)))))
+              if leftValid:
+                up += (noiseProb*(self.transitionCost + (self.discount*self.getValue((i,j-1)))))
+            if leftValid:#left
               #self.newGrid[i][j][1][0] = (mainProb*(self.transitionCost + (self.discount*self.getValue((i,j-1)))))
               left = (mainProb*(self.transitionCost + (self.discount*self.getValue((i,j-1)))))
-              left += (noiseProb*(self.transitionCost + (self.discount*self.getValue((i+1,j)))))
-              left += (noiseProb*(self.transitionCost + (self.discount*self.getValue((i-1,j)))))
-            if valid:#down
+              if upValid:
+                left += (noiseProb*(self.transitionCost + (self.discount*self.getValue((i+1,j)))))
+              if downValid:
+                left += (noiseProb*(self.transitionCost + (self.discount*self.getValue((i-1,j)))))
+            if downValid:#down
               #self.newGrid[i][j][2][0] = (mainProb*(self.transitionCost + (self.discount*self.getValue((i-1,j)))))
               down = (mainProb*(self.transitionCost + (self.discount*self.getValue((i-1,j)))))
-              down += (noiseProb*(self.transitionCost + (self.discount*self.getValue((i,j+1)))))
-              down += (noiseProb*(self.transitionCost + (self.discount*self.getValue((i,j-1)))))
-            if valid:#right
+              if rightValid:
+                down += (noiseProb*(self.transitionCost + (self.discount*self.getValue((i,j+1)))))
+              if leftValid:
+                down += (noiseProb*(self.transitionCost + (self.discount*self.getValue((i,j-1)))))
+            if rightValid:#right
               #self.newGrid[i][j][3][0] = (mainProb*(self.transitionCost + (self.discount*self.getValue((i,j+1)))))
               right = (mainProb*(self.transitionCost + (self.discount*self.getValue((i,j+1)))))
-              right += (noiseProb*(self.transitionCost + (self.discount*self.getValue((i+1,j)))))
-              right += (noiseProb*(self.transitionCost + (self.discount*self.getValue((i-1,j)))))
+              if upValid:
+                right += (noiseProb*(self.transitionCost + (self.discount*self.getValue((i+1,j)))))
+              if downValid:
+                right += (noiseProb*(self.transitionCost + (self.discount*self.getValue((i-1,j)))))
 
             self.newGrid[i][j][0][0] = up
             self.newGrid[i][j][1][0] = left
