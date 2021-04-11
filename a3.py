@@ -176,24 +176,52 @@ class ValueIterationAgent:
           #vk = self.discount*self.getValue((i,j))
           #print(f"vk: {vk}")
           
+          terminal_or_boulder = False
 
-          up = down = left = right = 0
+          for term in self.terminal:
+            if term[0] == i and term[1] == j:
+              terminal_or_boulder = True
 
-          valid = (i+1 < rows and i-1 > 0 and j+1 < cols and j-1 > 0)
-          mainProb = (1-self.noise)
+          for boulder in self.boulder:
+            if boulder[0] == i and boulder[1] == j:
+              terminal_or_boulder = True
 
-          # [this][][][] is the x coord
-          # [][this][][] is the y coord
-          # []][][this][] is which of the 4 neighbouring cells it would go to (up,left,down,right)
-          # []][][][this] is the value (if it was [1] that would be the arrow)
-          if valid: #up
-            self.newGrid[i][j][0][0] = (mainProb*(self.transitionCost + (self.discount*self.getValue((i+1,j)))))
-          if valid:#left
-            self.newGrid[i][j][1][0] = (mainProb*(self.transitionCost + (self.discount*self.getValue((i,j-1)))))
-          if valid:#down
-            self.newGrid[i][j][2][0] = (mainProb*(self.transitionCost + (self.discount*self.getValue((i-1,j)))))
-          if valid:#right
-            self.newGrid[i][j][3][0] = (mainProb*(self.transitionCost + (self.discount*self.getValue((i,j+1)))))
+          if not terminal_or_boulder:
+            up = down = left = right = 0
+
+            valid = (i+1 < rows and i-1 > 0 and j+1 < cols and j-1 > 0)
+            mainProb = (1-self.noise)
+            noiseProb = self.noise/2
+
+            # [this][][][] is the x coord
+            # [][this][][] is the y coord
+            # []][][this][] is which of the 4 neighbouring cells it would go to (up,left,down,right)
+            # []][][][this] is the value (if it was [1] that would be the arrow)
+            if valid: #up
+              #self.newGrid[i][j][0][0] = (mainProb*(self.transitionCost + (self.discount*self.getValue((i+1,j)))))
+              up = (mainProb*(self.transitionCost + (self.discount*self.getValue((i+1,j)))))
+              up += (noiseProb*(self.transitionCost + (self.discount*self.getValue((i,j+1)))))
+              up += (noiseProb*(self.transitionCost + (self.discount*self.getValue((i,j-1)))))
+            if valid:#left
+              #self.newGrid[i][j][1][0] = (mainProb*(self.transitionCost + (self.discount*self.getValue((i,j-1)))))
+              left = (mainProb*(self.transitionCost + (self.discount*self.getValue((i,j-1)))))
+              left += (noiseProb*(self.transitionCost + (self.discount*self.getValue((i+1,j)))))
+              left += (noiseProb*(self.transitionCost + (self.discount*self.getValue((i-1,j)))))
+            if valid:#down
+              #self.newGrid[i][j][2][0] = (mainProb*(self.transitionCost + (self.discount*self.getValue((i-1,j)))))
+              down = (mainProb*(self.transitionCost + (self.discount*self.getValue((i-1,j)))))
+              down += (noiseProb*(self.transitionCost + (self.discount*self.getValue((i,j+1)))))
+              down += (noiseProb*(self.transitionCost + (self.discount*self.getValue((i,j-1)))))
+            if valid:#right
+              #self.newGrid[i][j][3][0] = (mainProb*(self.transitionCost + (self.discount*self.getValue((i,j+1)))))
+              right = (mainProb*(self.transitionCost + (self.discount*self.getValue((i,j+1)))))
+              right += (noiseProb*(self.transitionCost + (self.discount*self.getValue((i+1,j)))))
+              right += (noiseProb*(self.transitionCost + (self.discount*self.getValue((i-1,j)))))
+
+            self.newGrid[i][j][0][0] = up
+            self.newGrid[i][j][1][0] = left
+            self.newGrid[i][j][2][0] = down
+            self.newGrid[i][j][3][0] = right
           
       self.grid = copy.deepcopy(self.newGrid)
     
