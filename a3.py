@@ -14,6 +14,7 @@ ALPHA = 0
 DISCOUNT = 0
 NOISE = 0
 TRANSITION_COST = 0
+DECIMALS = 1
 
 def createGrid(horizontal,vertical):
 
@@ -126,16 +127,24 @@ class ValueIterationAgent:
     self.boulder = boulder
     self.terminal = terminal
   
-  def iterate(self):
-    
-    #actions = {'up': [1,0], 'down': [-1,0], 'left': [0-1], 'right': [0,1]}
-    rows = len(self.grid)  # Number of rows in the grid
-    cols = len(self.grid[0])
+  
+        
 
-    state = self.startState
-    
+  #of 1 state
   def getValue(self, state):
-    pass
+    
+    # if state we're checking is outside the grid
+    if state[0] < 0 or state[0] > len(self.grid) or state[1] < 0 or state[1] > len(self.grid[0]):
+      return 0
+
+    values = []
+    for val in self.grid[state[0]][state[1]]:
+      #print(f"val: {val} i: {state[0]} j: {state[1]}")
+      #print(f"val[0]: {val[0]}")
+      values.append(val[0])
+
+    return max(values)
+    
 
   def getQValue(self, state, action):
     pass
@@ -145,6 +154,40 @@ class ValueIterationAgent:
 
   def getAction(self, state):
     pass
+  
+  def iterate(self):
+    
+    rows = len(self.grid)  # Number of rows in the grid
+    cols = len(self.grid[0])
+
+    #state = self.startState
+    for iter in range(self.k):
+      for i in range(rows):
+        for j in range(cols):
+          
+          vk = self.discount*self.getValue((i,j))
+          #print(f"vk: {vk}")
+          
+
+          up = down = left = right = 0
+
+          valid = (i+1 < rows and i-1 > 0 and j+1 < cols and j-1 > 0)
+          mainProb = (1-self.noise)
+
+          # [this][][][] is the x coord
+          # [][this][][] is the y coord
+          # []][][this][] is which of the 4 neighbouring cells it would go to
+          # []][][][this] is the value (if it was [1] that would be the arrow)
+          if valid:
+            self.grid[i][j][0][0] = round(mainProb*(self.getValue((i+1,j)) + vk),DECIMALS)
+          if valid:
+            self.grid[i][j][1][0] = round(mainProb*(self.getValue((i-1,j)) + vk),DECIMALS)
+          if valid:
+            self.grid[i][j][2][0] = round(mainProb*(self.getValue((i,j+1)) + vk),DECIMALS)
+          if valid:
+            self.grid[i][j][3][0] = round(mainProb*(self.getValue((i,j-1)) + vk),DECIMALS)
+
+          #self.grid[i][j] vk1 = max(up,down,left,right)
 
 def main():
 
@@ -154,7 +197,9 @@ def main():
     readInput('gridConf.txt')
     grid = createGrid(HORIZONTAL,VERTICAL)
     valIter = ValueIterationAgent(grid,TERMINAL,BOULDER,ROBOTSTARTSTATE,K,EPISODES,ALPHA,DISCOUNT,NOISE,TRANSITION_COST)
-    tests()
+    valIter.iterate()
+    grid = valIter.grid
+    #tests()
 
     terminal_states = TERMINAL
     boulder_states = BOULDER
@@ -220,11 +265,11 @@ def draw_board(window, grid, terminal, boulders, max_reward, max_punishment, ite
                 best_direction = grid[row][col][best_move][1]  # Get the best direction out of this cell
 
                 if best_value >= 0:  # Best value is positive, so draw the rectangle in green
-                    canvas.create_rectangle(x1, y1, x2, y2, outline='white',
-                                            fill='#%02x%02x%02x' % (0, int(200 * min(best_value / max_reward, max_reward)), 0))  # Draw the rectangle of this cell
+                    canvas.create_rectangle(x1, y1, x2, y2, outline='white', fill='black')
+                                            #fill='#%02x%02x%02x' % (0, int(200 * min(best_value / max_reward, max_reward)), 0))  # Draw the rectangle of this cell
                 else:  # Best value is negative, so draw the rectangle in red
-                    canvas.create_rectangle(x1, y1, x2, y2, outline='white',
-                                            fill='#%02x%02x%02x' % (int(200 * min(best_value / max_punishment, -1 * max_punishment)), 0, 0))  # Draw the rectangle of this cell
+                    canvas.create_rectangle(x1, y1, x2, y2, outline='white', fill='black')
+                                            #fill='#%02x%02x%02x' % (int(200 * min(best_value / max_punishment, -1 * max_punishment)), 0, 0))  # Draw the rectangle of this cell
 
                 canvas.create_text((x1 + x2) / 2, (y1 + y2) / 2, text=str(round(best_value, 2)),
                                    font=('TkDefaultFont', int(0.25 * ((canvas_width - 2 * edge_dist) / cols))), fill='white')  # Print the best value in the middle of the cell
