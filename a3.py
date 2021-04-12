@@ -2,6 +2,7 @@ import re
 import numpy as np
 import tkinter as tk
 import copy
+import random
 
 #global variables for now, we may do something else with them
 HORIZONTAL = 0
@@ -34,11 +35,34 @@ def createGrid(horizontal,vertical):
   return grid
   
 def readInput(filename='gridConf.txt'):
+    
+    #First cleaning up global variables in order to allow running multiple grids
+    global HORIZONTA
+    global VERTICA
+    global TERMINAL
+    global BOULDER
+    global ROBOTSTARTSTATE
+    global K
+    global EPISODES
+    global DISCOUNT
+    global NOISE
+    global TRANSITION_COST
+    HORIZONTAL = 0
+    VERTICAL = 0
+    TERMINAL = []
+    BOULDER = []
+    ROBOTSTARTSTATE = 0
+    K = 0
+    EPISODES = 0
+    ALPHA = 0
+    DISCOUNT = 0
+    NOISE = 0
+    TRANSITION_COST = 0
 
-  read = open(filename)
-  for line in read:
-    #print(f"Line: {line}")
-    parseLine(line)
+    read = open(filename)
+    for line in read:
+      #print(f"Line: {line}")
+      parseLine(line)
     
 def parseLine(line):
 
@@ -112,6 +136,7 @@ def tests():
   print(f"TransitionCost: {TRANSITION_COST}")
 
 
+
 class ValueIterationAgent:
 
   def __init__(self,grid,terminal,boulder, startState, k, episodes, alpha, discount, noise, transitionCost):
@@ -121,7 +146,7 @@ class ValueIterationAgent:
     self.discount = discount
     self.k = k
     self.alpha = alpha
-    self.episodes = episodes
+    #self.episodes = episodes
     self.noise = noise
     self.startState = startState
     self.transitionCost = transitionCost
@@ -147,14 +172,7 @@ class ValueIterationAgent:
       return max(values)
     
 
-  def getQValue(self, state, action):
-    pass
-
-  def getPolicy(self, state):
-    pass
-
-  def getAction(self, state):
-    pass
+  
   
   def iterate(self):
     
@@ -238,29 +256,225 @@ class ValueIterationAgent:
           
       self.grid = copy.deepcopy(self.newGrid)
     
+class QLearningAgent:
 
+    def __init__(self,grid,terminal,boulder, startState, k, episodes, alpha, discount, noise, transitionCost):
+
+
+        self.grid = grid
+        self.discount = discount
+        self.alpha = alpha
+        self.episodes = episodes
+        self.noise = noise
+        self.startState = startState
+        self.transitionCost = transitionCost
+        self.boulder = boulder
+        self.terminal = terminal
+    
+    #of 1 state
+    def getValue(self, state):
+    
+        # if state we're checking is outside the grid
+        if state[0] < 0 or state[0] > len(self.grid) or state[1] < 0 or state[1] > len(self.grid[0]):
+            return 0        
+        else:
+            best = self.grid[state[0]][state[1]][0]
+            for val in self.grid[state[0]][state[1]]:
+                if val[0] > best[0]:
+                    best = val
+        return best
+      
+
+    def getQValue(self, state, action):    
+        oldValue = self.getValue(state)[0]*(1-self.discount)
+        newValue = self.getValue(action)[0]*(self.discount)
+        qValue = oldValue + newValue
+        return qValue
+
+    def getPolicy(self, state):
+        pass
+    
+    #Chooses which direction the machine will try to move
+    def getAction(self, state):
+        bestOption = self.getValue(state)
+        #If the best option available to us is 0, then choose a random direction
+        if bestOption[0] == 0:
+            temp = self.grid[state[0]][state[1]]
+            bestOption = temp[random.randrange(3)]
+        
+        #Now that we know which way we want to go, determine if we get blown off course
+        chance = random.random()
+        if chance > self.noise:
+            chosenOption = bestOption
+        elif chance > self.noise/2:
+            temp = self.grid[state[0]][state[1]]            
+            if bestOption[1] == '↑':
+                chosenOption = temp[1]
+            elif bestOption[1] == '←':
+                chosenOption = temp[2]
+            elif bestOption[1] == '↓':
+                chosenOption = temp[3] 
+            else:
+                chosenOption = temp[0]
+        else:
+            temp = self.grid[state[0]][state[1]]                
+            if bestOption[1] == '↑':
+                chosenOption = temp[3]
+            elif bestOption[1] == '←':
+                chosenOption = temp[0]
+            elif bestOption[1] == '↓':
+                chosenOption = temp[1] 
+            else:
+                chosenOption = temp[2]
+                
+        return chosenOption
+        
+    #will return the state that it will be in after the move
+    def move(self, position, direction):
+        print(f" position: {position}")
+        if direction == '↑':
+            newState = [[position[0]+1],[position[1]]]
+        elif direction == '←':
+            newState = [[position[0]][position[1]-1]]
+        elif direction == '↓':
+            newState = [[position[0]-1][position[1]]]
+        else:
+            newState = [[position[0]][position[1]+1]]
+        
+        print(f" newState: {newState}")
+        #if the move is not valid eg. moving into a wall. Then we will end up where we started
+        validMove = (newState[1]+1 < rows and newState[1]-1 >= 0 and newState[0]+1 < cols and newState[0]-1 >= 0)
+        for boulder in self.boulder:
+            if boulder[0] == newState[0] and boulder[1] == newState[1]:
+              validMove = False
+        if not validMove:
+            newState = position
+        return newState
+    
+    #updates the q-values of the previous state
+    def update(self, position,direction,newState):
+        qValue = self.getQValue(position, newState)        
+        
+        if direction == '↑':
+            state = self.grid[position[0]][position[1][0][0]] = qValue
+        elif direction == '←':
+            state = self.grid[position[0]][position[1][1][0]] = qValue
+        elif direction == '↓':
+            state = self.grid[position[0]][position[1][2][0]] = qValue 
+        else:
+            state = self.grid[position[0]][position[1][3][0]] = qValue
+            
+    def update(self, position):
+        for term in self.terminal:
+                if term[0] == position[0] and term[1] == position[1]:
+                  value = term[2]
+                  
+        self.grid[position[0]][position[1][0][0]] = value
+        
+    
+    def explore(self):
+        position = self.startState
+        step = 1
+        for episode in range(self.episodes):
+            print(f" Step: {step}")
+            step = step+1
+            #check if we are in a terminal state
+            terminal = False
+            for term in self.terminal:
+                if term[0] == position[0] and term[1] == position[1]:
+                  terminal = True
+            if terminal:
+                #exit and try again
+                self.update(position)
+                position = self.startState
+            else:
+                #behave normally
+                chosenAction = self.getAction(position)
+                print(f" ChosenAction is: {chosenAction}")
+                newState = self.move(position, chosenAction[1])
+                print(f" NewState is: {newState}")
+                self.update(position,chosenAction[1],newState)
+                # print("fChosenAction is: {chosenAction}")
+                position = newState
+            
+        
+    
 
 def main():
 
     #(self,grid,terminal,boulder, startState, k, episodes, alpha, discount, noise, transitionCost)
     
-    window = tk.Tk()
-    readInput('gridConf.txt')
-    grid = createGrid(HORIZONTAL,VERTICAL)
-    valIter = ValueIterationAgent(grid,TERMINAL,BOULDER,ROBOTSTARTSTATE,K,EPISODES,ALPHA,DISCOUNT,NOISE,TRANSITION_COST)
-    valIter.iterate()
-    grid = valIter.grid
-    tests()
+    
+    alltests = False
+    if alltests:
+        all_inputs()
+    else: 
+        # window = tk.Tk()
+        # #readInput('gridConf.txt')
+        # #readInput('gridConfAlt.txt')
+        # #readInput('gridConfAlt2.txt')
+        # readInput('gridConfSmall.txt')
+        # grid = createGrid(HORIZONTAL,VERTICAL)
+        # print(grid)
+        # valIter = ValueIterationAgent(grid,TERMINAL,BOULDER,ROBOTSTARTSTATE,K,EPISODES,ALPHA,DISCOUNT,NOISE,TRANSITION_COST)
+        # valIter.iterate()
+        # grid = valIter.grid
+        # print(grid)
+        # tests()
+    
+        # terminal_states = TERMINAL
+        # boulder_states = BOULDER
+        # num_iterations = K
+    
+        # draw_board(window, grid, [row[:-1] for row in terminal_states], boulder_states,
+        #            max_reward(terminal_states), max_punishment(terminal_states), num_iterations)
+    
+        # window.mainloop()
+        
+        #now for Q-Learning
+        print("\n Now for Q-Learning\n")
+        window = tk.Tk()
+        #readInput('gridConf.txt')
+        #readInput('gridConfAlt.txt')
+        #readInput('gridConfAlt2.txt')
+        readInput('gridConfSmall.txt')
+        grid = createGrid(HORIZONTAL,VERTICAL)
+        print(grid)
+        qLearner = QLearningAgent(grid,TERMINAL,BOULDER,ROBOTSTARTSTATE,K,EPISODES,ALPHA,DISCOUNT,NOISE,TRANSITION_COST)
+        qLearner.explore()
+        grid = qLearner.grid
+        print(grid)
+        tests()
+    
+        terminal_states = TERMINAL
+        boulder_states = BOULDER
+        num_iterations = K
+    
+        draw_board(window, grid, [row[:-1] for row in terminal_states], boulder_states,
+                   max_reward(terminal_states), max_punishment(terminal_states), num_iterations)
+    
+        window.mainloop()
 
-    terminal_states = TERMINAL
-    boulder_states = BOULDER
-    num_iterations = K
-
-    draw_board(window, grid, [row[:-1] for row in terminal_states], boulder_states,
-               max_reward(terminal_states), max_punishment(terminal_states), num_iterations)
-
-    window.mainloop()
-
+#just for doing multiple different grids easily for fun
+def all_inputs():
+    #window = tk.Tk()
+    inputs = ['gridConfSmall.txt', 'gridConf.txt', 'gridConfAlt.txt', 'gridConfAlt2.txt']
+    for i in inputs:
+        window = tk.Tk()
+        readInput(i)
+        grid = createGrid(HORIZONTAL,VERTICAL)
+        valIter = ValueIterationAgent(grid,TERMINAL,BOULDER,ROBOTSTARTSTATE,K,EPISODES,ALPHA,DISCOUNT,NOISE,TRANSITION_COST)
+        valIter.iterate()
+        grid = valIter.grid
+        tests()    
+        terminal_states = TERMINAL
+        boulder_states = BOULDER
+        num_iterations = K
+    
+        draw_board(window, grid, [row[:-1] for row in terminal_states], boulder_states,
+                   max_reward(terminal_states), max_punishment(terminal_states), num_iterations)
+    
+        window.mainloop()
 
 def max_reward(terminal_states):
     max_reward = float('-inf')
