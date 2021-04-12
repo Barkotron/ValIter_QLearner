@@ -129,10 +129,14 @@ class ValueIterationAgent:
   #of 1 state
   def getValue(self, state):
     
+    for boulder in self.boulder:
+            if boulder[0] == state[0] and boulder[1] == state[1]:
+              return 0
+
     # if state we're checking is outside the grid
     if state[0] < 0 or state[0] > len(self.grid) or state[1] < 0 or state[1] > len(self.grid[0]):
       return 0
-
+    
     else:
       values = []
       for val in self.grid[state[0]][state[1]]:
@@ -176,31 +180,31 @@ class ValueIterationAgent:
             
             if upValid: #up
               up = (mainProb*(self.transitionCost + (self.discount*self.getValue((i+1,j)))))
-              if rightValid:
-                up += (noiseProb*(self.transitionCost + (self.discount*self.getValue((i,j+1)))))
-              if leftValid:
-                up += (noiseProb*(self.transitionCost + (self.discount*self.getValue((i,j-1)))))
+            if rightValid:
+              up += (noiseProb*(self.transitionCost + (self.discount*self.getValue((i,j+1)))))
+            if leftValid:
+              up += (noiseProb*(self.transitionCost + (self.discount*self.getValue((i,j-1)))))
 
             if leftValid:#left
               left = (mainProb*(self.transitionCost + (self.discount*self.getValue((i,j-1)))))
-              if upValid:
-                left += (noiseProb*(self.transitionCost + (self.discount*self.getValue((i+1,j)))))
-              if downValid:
-                left += (noiseProb*(self.transitionCost + (self.discount*self.getValue((i-1,j)))))
+            if upValid:
+              left += (noiseProb*(self.transitionCost + (self.discount*self.getValue((i+1,j)))))
+            if downValid:
+              left += (noiseProb*(self.transitionCost + (self.discount*self.getValue((i-1,j)))))
 
             if downValid:#down
               down = (mainProb*(self.transitionCost + (self.discount*self.getValue((i-1,j)))))
-              if rightValid:
-                down += (noiseProb*(self.transitionCost + (self.discount*self.getValue((i,j+1)))))
-              if leftValid:
-                down += (noiseProb*(self.transitionCost + (self.discount*self.getValue((i,j-1)))))
+            if rightValid:
+              down += (noiseProb*(self.transitionCost + (self.discount*self.getValue((i,j+1)))))
+            if leftValid:
+              down += (noiseProb*(self.transitionCost + (self.discount*self.getValue((i,j-1)))))
 
             if rightValid:#right
               right = (mainProb*(self.transitionCost + (self.discount*self.getValue((i,j+1)))))
-              if upValid:
-                right += (noiseProb*(self.transitionCost + (self.discount*self.getValue((i+1,j)))))
-              if downValid:
-                right += (noiseProb*(self.transitionCost + (self.discount*self.getValue((i-1,j)))))
+            if upValid:
+              right += (noiseProb*(self.transitionCost + (self.discount*self.getValue((i+1,j)))))
+            if downValid:
+              right += (noiseProb*(self.transitionCost + (self.discount*self.getValue((i-1,j)))))
 
             # [this][][][] is the x coord
             # [][this][][] is the y coord
