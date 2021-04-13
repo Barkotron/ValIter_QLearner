@@ -26,7 +26,7 @@ def createGrid(horizontal,vertical):
     for v in range(vertical):
       square = [[0,'↑'],[0,'←'],[0,'↓'],[0,'→']]
       for term in TERMINAL:
-        if term[0] == h and term[1] == v:
+        if term[1] == h and term[0] == v:
           square = ([[term[2],'*']])
       row.append(square)
     grid.append(row)
@@ -266,7 +266,7 @@ class QLearningAgent:
         self.alpha = alpha
         self.episodes = episodes
         self.noise = noise
-        self.startState = startState
+        self.startState = [startState[1],startState[0]]
         self.transitionCost = transitionCost
         self.boulder = []
         for b in boulder:
@@ -281,11 +281,21 @@ class QLearningAgent:
     def getValue(self, state):
     
         # if state we're checking is outside the grid
-        if state[0] < 0 or state[0] > len(self.grid) or state[1] < 0 or state[1] > len(self.grid[0]):
+        if state[0] < 0 or state[0] > len(self.grid[0]) or state[1] < 0 or state[1] > len(self.grid):
             return 0        
         else:
             # print(f" strange: {state}")
+            # print(f"x: {len(self.grid[0])}")
+            # print(f"y: {len(self.grid)}")
             # print(f" umm: {self.grid}")
+            
+            # rows = len(self.grid[0])  # Number of rows in the grid
+            # cols = len(self.grid)
+            # for i in range(cols):
+            #     print(self.grid[i])
+                # for j in range(cols):
+                #     print(self.grid[i][j])
+                
             best = self.grid[state[0]][state[1]][0]
             # print(f" best: {best}")
             for val in self.grid[state[0]][state[1]]:
@@ -350,8 +360,8 @@ class QLearningAgent:
         else:
             newState = [position[0]+1,position[1]]
             
-        rows = len(self.grid[0])  # Number of rows in the grid
-        cols = len(self.grid)
+        rows = len(self.grid)  # Number of rows in the grid
+        cols = len(self.grid[0])
         
         # print(f"What is this: {rows}, and {cols}")
         # print(f" newState: {newState}")
@@ -361,9 +371,11 @@ class QLearningAgent:
         # leftValid = newState[1]-1 >= 0
         # rightValid = newState[1]+1 < cols
         
-        # print(f"Move Check: {newState}")
-        validMove = (newState[0] < rows and newState[0] >= 0 and newState[1] < cols and newState[1] >= 0)
-        # print(f"validMove: {validMove}")
+        # if state we're checking is outside the grid
+    # if state[0] < 0 or state[0] > len(self.grid) or state[1] < 0 or state[1] > len(self.grid[0]):
+        print(f"Move Check: {newState}")
+        validMove = (newState[0]+1 < rows and newState[0] >= 0 and newState[1]+1 < cols and newState[1] >= 0)
+        print(f"validMove: {validMove}")
         for boulder in self.boulder:
             #Grid is x,y but boulder and terminal are y,x
             if boulder[0] == newState[0] and boulder[1] == newState[1]:
@@ -375,8 +387,8 @@ class QLearningAgent:
     
     #updates the q-values of the previous state
     def update(self, position,direction,newState):
-        
-        # print(f" position: {position}")
+        print(f"New Boudler is: {self.boulder}\n and New Termianl is: {self.terminal}")
+        # print(f" position: {position} NewState {newState}")
         qValue = self.getQValue(position, newState)  
         print(f"qValue: {qValue}")
         # print(f" update value: {self.grid[position[0]][position[1]][0]}")
@@ -402,12 +414,12 @@ class QLearningAgent:
     
     def explore(self):
         position = self.startState
-        step = 1
+        step = 0
         for episode in range(self.episodes):
             print(f"\nCurrent Position: {position}")
             # print(f" Step: {step}")
             # print(f" grid: {self.grid}")
-            step = step+1
+            
             #check if we are in a terminal state
             
             # if step%20 == 0:
@@ -422,6 +434,7 @@ class QLearningAgent:
                   terminal = True
             if terminal:
                 print(" Reached Terminal state")
+                step = step+1
                 #exit and try again
                 # self.update(position)
                 position = self.startState
@@ -434,6 +447,7 @@ class QLearningAgent:
                 self.update(position,chosenAction[1],newState)
                 # print("fChosenAction is: {chosenAction}")
                 position = newState
+        print(f"\nReached Terminal State {step} Times.\n")
             
         
     
@@ -447,35 +461,35 @@ def main():
     if alltests:
         all_inputs()
     else: 
-        # window = tk.Tk()
-        # #readInput('gridConf.txt')
-        # #readInput('gridConfAlt.txt')
-        # #readInput('gridConfAlt2.txt')
+        window = tk.Tk()
+        readInput('gridConf.txt')
+        #readInput('gridConfAlt.txt')
+        #readInput('gridConfAlt2.txt')
         # readInput('gridConfSmall.txt')
-        # grid = createGrid(HORIZONTAL,VERTICAL)
-        # print(grid)
-        # valIter = ValueIterationAgent(grid,TERMINAL,BOULDER,ROBOTSTARTSTATE,K,EPISODES,ALPHA,DISCOUNT,NOISE,TRANSITION_COST)
-        # valIter.iterate()
-        # grid = valIter.grid
-        # print(grid)
-        # tests()
+        grid = createGrid(HORIZONTAL,VERTICAL)
+        print(grid)
+        valIter = ValueIterationAgent(grid,TERMINAL,BOULDER,ROBOTSTARTSTATE,K,EPISODES,ALPHA,DISCOUNT,NOISE,TRANSITION_COST)
+        valIter.iterate()
+        grid = valIter.grid
+        print(grid)
+        tests()
     
-        # terminal_states = TERMINAL
-        # boulder_states = BOULDER
-        # num_iterations = K
+        terminal_states = TERMINAL
+        boulder_states = BOULDER
+        num_iterations = K
     
-        # draw_board(window, grid, [row[:-1] for row in terminal_states], boulder_states,
-        #            max_reward(terminal_states), max_punishment(terminal_states), num_iterations)
+        draw_board(window, grid, [row[:-1] for row in terminal_states], boulder_states,
+                    max_reward(terminal_states), max_punishment(terminal_states), num_iterations)
     
-        # window.mainloop()
+        window.mainloop()
         
         #now for Q-Learning
         print("\n Now for Q-Learning\n")
         window = tk.Tk()
-        #readInput('gridConf.txt')
+        readInput('gridConf.txt')
         #readInput('gridConfAlt.txt')
         #readInput('gridConfAlt2.txt')
-        readInput('gridConfSmall.txt')
+        # readInput('gridConfSmall3.txt')
         grid = createGrid(HORIZONTAL,VERTICAL)
         # print(grid)
         tests()
@@ -487,10 +501,10 @@ def main():
     
         terminal_states = TERMINAL
         boulder_states = BOULDER
-        num_iterations = K
+        num_iterations = EPISODES
     
         draw_board(window, grid, [row[:-1] for row in terminal_states], boulder_states,
-                   max_reward(terminal_states), max_punishment(terminal_states), num_iterations)
+                    max_reward(terminal_states), max_punishment(terminal_states), num_iterations)
     
         window.mainloop()
 
