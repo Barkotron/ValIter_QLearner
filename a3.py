@@ -268,8 +268,14 @@ class QLearningAgent:
         self.noise = noise
         self.startState = startState
         self.transitionCost = transitionCost
-        self.boulder = boulder
-        self.terminal = terminal
+        self.boulder = []
+        for b in boulder:
+            self.boulder.append([b[1],b[0]])
+        self.terminal = []
+        for t in terminal:
+            self.terminal.append([t[1],t[0],t[2]])
+            
+        print(f"New Boudler is: {self.boulder}\n and New Termianl is: {self.terminal}")
     
     #of 1 state
     def getValue(self, state):
@@ -278,16 +284,19 @@ class QLearningAgent:
         if state[0] < 0 or state[0] > len(self.grid) or state[1] < 0 or state[1] > len(self.grid[0]):
             return 0        
         else:
+            # print(f" strange: {state}")
+            # print(f" umm: {self.grid}")
             best = self.grid[state[0]][state[1]][0]
+            # print(f" best: {best}")
             for val in self.grid[state[0]][state[1]]:
+                # print(f" val: {val}")
                 if val[0] > best[0]:
                     best = val
         return best
       
-
     def getQValue(self, state, action):    
-        oldValue = self.getValue(state)[0]*(1-self.discount)
-        newValue = self.getValue(action)[0]*(self.discount)
+        oldValue = self.transitionCost + (self.getValue(state)[0]*(1-self.discount))
+        newValue = self.transitionCost + (self.getValue(action)[0]*(self.discount))
         qValue = oldValue + newValue
         return qValue
 
@@ -331,61 +340,90 @@ class QLearningAgent:
         
     #will return the state that it will be in after the move
     def move(self, position, direction):
-        print(f" position: {position}")
+        # print(f" position: {position}")
         if direction == '↑':
-            newState = [[position[0]+1],[position[1]]]
+            newState = [position[0],position[1]+1]
         elif direction == '←':
-            newState = [[position[0]][position[1]-1]]
+            newState = [position[0]-1,position[1]]
         elif direction == '↓':
-            newState = [[position[0]-1][position[1]]]
+            newState = [position[0],position[1]-1]
         else:
-            newState = [[position[0]][position[1]+1]]
+            newState = [position[0]+1,position[1]]
+            
+        rows = len(self.grid[0])  # Number of rows in the grid
+        cols = len(self.grid)
         
-        print(f" newState: {newState}")
+        # print(f"What is this: {rows}, and {cols}")
+        # print(f" newState: {newState}")
         #if the move is not valid eg. moving into a wall. Then we will end up where we started
-        validMove = (newState[1]+1 < rows and newState[1]-1 >= 0 and newState[0]+1 < cols and newState[0]-1 >= 0)
+        # upValid = newState[0]+1 < rows
+        # downValid = newState[0]-1 >= 0
+        # leftValid = newState[1]-1 >= 0
+        # rightValid = newState[1]+1 < cols
+        
+        # print(f"Move Check: {newState}")
+        validMove = (newState[0] < rows and newState[0] >= 0 and newState[1] < cols and newState[1] >= 0)
+        # print(f"validMove: {validMove}")
         for boulder in self.boulder:
+            #Grid is x,y but boulder and terminal are y,x
             if boulder[0] == newState[0] and boulder[1] == newState[1]:
               validMove = False
         if not validMove:
+            print("Not Valid Move")
             newState = position
         return newState
     
     #updates the q-values of the previous state
     def update(self, position,direction,newState):
-        qValue = self.getQValue(position, newState)        
         
+        # print(f" position: {position}")
+        qValue = self.getQValue(position, newState)  
+        print(f"qValue: {qValue}")
+        # print(f" update value: {self.grid[position[0]][position[1]][0]}")
+        # print(f" update value: {self.grid[position[0]][position[1]][1]}")
+        # print(f" update value: {self.grid[position[0]][position[1]][2]}")
+        # print(f" update value: {self.grid[position[0]][position[1][0]]}")
         if direction == '↑':
-            state = self.grid[position[0]][position[1][0][0]] = qValue
+            self.grid[position[0]][position[1]][0][0] = qValue
         elif direction == '←':
-            state = self.grid[position[0]][position[1][1][0]] = qValue
+            self.grid[position[0]][position[1]][1][0] = qValue
         elif direction == '↓':
-            state = self.grid[position[0]][position[1][2][0]] = qValue 
+            self.grid[position[0]][position[1]][2][0] = qValue 
         else:
-            state = self.grid[position[0]][position[1][3][0]] = qValue
+            self.grid[position[0]][position[1]][3][0] = qValue
             
-    def update(self, position):
-        for term in self.terminal:
-                if term[0] == position[0] and term[1] == position[1]:
-                  value = term[2]
+    # def update(self, position):
+    #     for term in self.terminal:
+    #             if term[0] == position[0] and term[1] == position[1]:
+    #               value = term[2]
                   
-        self.grid[position[0]][position[1][0][0]] = value
+    #     self.grid[position[0]][position[1][0][0]] = value
         
     
     def explore(self):
         position = self.startState
         step = 1
         for episode in range(self.episodes):
-            print(f" Step: {step}")
+            print(f"\nCurrent Position: {position}")
+            # print(f" Step: {step}")
+            # print(f" grid: {self.grid}")
             step = step+1
             #check if we are in a terminal state
+            
+            # if step%20 == 0:
+            #     window = tk.Tk()
+            #     draw_board(window, self.grid, [row[:-1] for row in self.terminal], self.boulder,
+            #        max_reward(self.terminal), max_punishment(self.terminal), step)    
+            #     window.mainloop()
+                
             terminal = False
             for term in self.terminal:
                 if term[0] == position[0] and term[1] == position[1]:
                   terminal = True
             if terminal:
+                print(" Reached Terminal state")
                 #exit and try again
-                self.update(position)
+                # self.update(position)
                 position = self.startState
             else:
                 #behave normally
@@ -439,11 +477,12 @@ def main():
         #readInput('gridConfAlt2.txt')
         readInput('gridConfSmall.txt')
         grid = createGrid(HORIZONTAL,VERTICAL)
-        print(grid)
+        # print(grid)
+        tests()
         qLearner = QLearningAgent(grid,TERMINAL,BOULDER,ROBOTSTARTSTATE,K,EPISODES,ALPHA,DISCOUNT,NOISE,TRANSITION_COST)
         qLearner.explore()
         grid = qLearner.grid
-        print(grid)
+        # print(grid)
         tests()
     
         terminal_states = TERMINAL
@@ -458,7 +497,7 @@ def main():
 #just for doing multiple different grids easily for fun
 def all_inputs():
     #window = tk.Tk()
-    inputs = ['gridConfSmall.txt', 'gridConf.txt', 'gridConfAlt.txt', 'gridConfAlt2.txt']
+    inputs = ['gridConfSmall.txt', 'gridConfSmall2.txt', 'gridConf.txt', 'gridConfAlt.txt', 'gridConfAlt2.txt']
     for i in inputs:
         window = tk.Tk()
         readInput(i)
