@@ -1,34 +1,5 @@
 import tkinter as tk
 
-
-def main():
-
-    window = tk.Tk()
-
-    # Sample grid after 10 iterations
-    grid = [[[[0.19007013163048878, '↑'], [0.06949349578957349, '↓'], [0.3042928921162562, '→'], [0.15652736072667697, '←']],
-     [[0.3567050660918199, '↑'], [0.3567050660918199, '↓'], [0.5072615790177806, '→'], [0.20854082305418617, '←']],
-     [[0.5516309435734041, '↑'], [0.2934347863772087, '↓'], [0.7167255573827326, '→'], [0.36177064093774475, '←']],
-     [[1.0, '*']]],
-    [[[0.14145528124656256, '↑'], [-0.09084170632159716, '↓'], [0.021985680919856136, '→'],
-      [0.021985680919856136, '←']], [[0.0, '↑'], [0.0, '↓'], [0.0, '→'], [0.0, '←']],
-     [[0.35822582699563155, '↑'], [-0.052136131323774315, '↓'], [-0.7422951677576689, '→'], [0.23550898317516328, '←']],
-     [[-1.0, '*']]],
-    [[[-0.005154745884862078, '↑'], [-0.11687509761210652, '↓'], [-0.08963317715708871, '→'], [-0.10480675028750272, '←']],
-     [[-0.08851624797145073, '↑'], [-0.08851624797145072, '↓'], [0.005677384241543525, '→'], [-0.11497840097080475, '←']],
-     [[0.14907246992522372, '↑'], [-0.0030933311979867255, '↓'], [-0.1245792731957479, '→'], [-0.05441354967950589, '←']],
-     [[-0.8155464044973666, '↑'], [-0.16555599028592122, '↓'], [-0.2687607840121239, '→'], [-0.09311284841394765, '←']]]]
-
-    terminal_states = [[0, 3, 1], [1, 3, -1]]
-    boulder_states = [[1, 1]]
-    num_iterations = 10
-
-    draw_board(window, grid, [row[:-1] for row in terminal_states], boulder_states,
-               max_reward(terminal_states), max_punishment(terminal_states), num_iterations)
-
-    window.mainloop()
-
-
 def max_reward(terminal_states):
     max_reward = float('-inf')
 
@@ -49,6 +20,7 @@ def max_punishment(terminal_states):
     return max_punishment
 
 
+
 def draw_board(window, grid, terminal, boulders, max_reward, max_punishment, iterations):
 
     canvas_width = 1000  # Width of the window
@@ -67,11 +39,13 @@ def draw_board(window, grid, terminal, boulders, max_reward, max_punishment, ite
 
     canvas = tk.Canvas(window, width=canvas_width, height=canvas_height, background='black')  # Create a black background
 
-    for row in range(rows):  # Loop through the rows of the grid
+    for row in range(rows - 1, -1, -1):  # Loop through the rows of the grid
         for col in range(cols):  # Loop through the columns of the grid
+            #print(row, col)
             if [row, col] not in boulders:  # If it's not a boulder state
                 x1 = edge_dist + col * ((canvas_width - 2 * edge_dist) / cols)  # Top left x coordinate of the rectangle
-                y1 = edge_dist + row * ((canvas_height - edge_dist - bottom_space) / rows)  # Top left y coordinate of the rectangle
+                y1 = edge_dist + (rows - row - 1) * ((canvas_height - edge_dist - bottom_space) / rows)  # Top left y coordinate of the rectangle
+                #print(x1, y1)
                 x2 = x1 + ((canvas_width - 2 * edge_dist) / cols)  # Bottom right x coordinate of the rectangle
                 y2 = y1 + ((canvas_height - edge_dist - bottom_space) / rows)  # Bottom right y coordinate of the rectangle
 
@@ -90,6 +64,7 @@ def draw_board(window, grid, terminal, boulders, max_reward, max_punishment, ite
                                    font=('TkDefaultFont', int(0.25 * ((canvas_width - 2 * edge_dist) / cols))), fill='white')  # Print the best value in the middle of the cell
 
                 if [row, col] in terminal:  # If this cell is a terminal state
+                    #print("TERMINAL: ", row, col)
                     x1 = x1 + small_rect_diff
                     y1 = y1 + small_rect_diff
                     x2 = x2 - small_rect_diff
@@ -122,7 +97,7 @@ def draw_board(window, grid, terminal, boulders, max_reward, max_punishment, ite
 
             else:  # This is a boulder state
                 x1 = edge_dist + col * ((canvas_width - 2 * edge_dist) / cols)
-                y1 = edge_dist + row * ((canvas_height - edge_dist - bottom_space) / rows)
+                y1 = edge_dist + (rows - row - 1) * ((canvas_height - edge_dist - bottom_space) / rows)
                 x2 = x1 + ((canvas_width - 2 * edge_dist) / cols)
                 y2 = y1 + ((canvas_height - edge_dist - bottom_space) / rows)
                 canvas.create_rectangle(x1, y1, x2, y2, fill='grey', outline='white')
@@ -142,6 +117,3 @@ def get_best_move(state):
             max_index = move
             max_value = state[move][0]
     return max_index
-
-
-main()

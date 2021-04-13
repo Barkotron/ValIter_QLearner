@@ -2,6 +2,7 @@ import re
 import numpy as np
 import tkinter as tk
 import copy
+import GUI
 
 #global variables for now, we may do something else with them
 HORIZONTAL = 0
@@ -65,7 +66,7 @@ def parseLine(line):
   elif field == 'Terminal':
     for i in range(1,len(tokens),4):
       global TERMINAL
-      TERMINAL.append([int(tokens[i+1]),int(tokens[i+2]),int(tokens[i+3])])
+      TERMINAL.append([int(tokens[i+1]),int(tokens[i+2]),float(tokens[i+3])])
   elif field == 'Boulder':
     for i in range(1,len(tokens),3):
       global BOULDER
@@ -127,19 +128,26 @@ class ValueIterationAgent:
     self.iterate()
 
   #of 1 state
-  def getValue(self, state):
+  def getValue(self, state, target):
     
+    #if you're trying to move into a boulder: 'bounce off' and stay where you tried to move from
     for boulder in self.boulder:
-            if boulder[0] == state[0] and boulder[1] == state[1]:
-              return 0
+            if boulder[0] == target[0] and boulder[1] == target[1]:
+              values = []
+              for val in self.grid[state[0]][state[1]]:
+                values.append(val[0])
+              return max(values)
 
     # if state we're checking is outside the grid
-    if state[0] < 0 or state[0] > len(self.grid) or state[1] < 0 or state[1] > len(self.grid[0]):
-      return 0
+    if target[0] < 0 or target[0] >= len(self.grid) or target[1] < 0 or target[1] >= len(self.grid[0]):
+      values = []
+      for val in self.grid[state[0]][state[1]]:
+        values.append(val[0])
+      return max(values)
     
     else:
       values = []
-      for val in self.grid[state[0]][state[1]]:
+      for val in self.grid[target[0]][target[1]]:
         values.append(val[0])
       return max(values)
   
@@ -148,7 +156,7 @@ class ValueIterationAgent:
     rows = len(self.grid)
     cols = len(self.grid[0])
 
-    for iteration in range(self.k):
+    for iteration in range(1,self.k):
       
       #Copy the grid so we aren't using values that were updated in the same iteration
       self.newGrid = copy.deepcopy(self.grid)
@@ -172,48 +180,38 @@ class ValueIterationAgent:
             mainProb = (1-self.noise) #probability for desired direction
             noiseProb = self.noise/2 #probability for each of the 2 'noise directions'
 
-            upValid = i+1 < rows
-            downValid = i-1 >= 0
-            leftValid = j-1 >= 0
-            rightValid = j+1 < cols
+            upValid = True#i+1 < rows
+            downValid = True#i-1 >= 0
+            leftValid = True#j-1 >= 0
+            rightValid = True#j+1 < cols
 
             
             if upValid: #up
-              up = (mainProb*(self.transitionCost + (self.discount*self.getValue((i+1,j)))))
-            if rightValid:
-              up += (noiseProb*(self.transitionCost + (self.discount*self.getValue((i,j+1)))))
-            if leftValid:
-              up += (noiseProb*(self.transitionCost + (self.discount*self.getValue((i,j-1)))))
+              up = ((self.discount*(self.getValue((i,j),(i+1,j)))))
 
             if leftValid:#left
-              left = (mainProb*(self.transitionCost + (self.discount*self.getValue((i,j-1)))))
-            if upValid:
-              left += (noiseProb*(self.transitionCost + (self.discount*self.getValue((i+1,j)))))
-            if downValid:
-              left += (noiseProb*(self.transitionCost + (self.discount*self.getValue((i-1,j)))))
+              left = ((self.discount*(self.getValue((i,j),(i,j-1)))))
 
             if downValid:#down
-              down = (mainProb*(self.transitionCost + (self.discount*self.getValue((i-1,j)))))
-            if rightValid:
-              down += (noiseProb*(self.transitionCost + (self.discount*self.getValue((i,j+1)))))
-            if leftValid:
-              down += (noiseProb*(self.transitionCost + (self.discount*self.getValue((i,j-1)))))
+              down = ((self.discount*(self.getValue((i,j),(i-1,j)))))
 
             if rightValid:#right
-              right = (mainProb*(self.transitionCost + (self.discount*self.getValue((i,j+1)))))
-            if upValid:
-              right += (noiseProb*(self.transitionCost + (self.discount*self.getValue((i+1,j)))))
-            if downValid:
-              right += (noiseProb*(self.transitionCost + (self.discount*self.getValue((i-1,j)))))
+              right = ((self.discount*(self.getValue((i,j),(i,j+1)))))
+
+            totalUp = mainProb*up + noiseProb*left + noiseProb*right
+            totalLeft = mainProb*left + noiseProb*up + noiseProb*down
+            totalDown = mainProb*down + noiseProb*left + noiseProb*right
+            totalRight = mainProb*right + noiseProb*up + noiseProb*down
+
 
             # [this][][][] is the x coord
             # [][this][][] is the y coord
             # []][][this][] is which of the 4 neighbouring cells it would go to (up,left,down,right)
             # []][][][this] is the value if [0] (if [1] that would be the arrow since they look like: [0,'↑'])
-            self.newGrid[i][j][0][0] = up
-            self.newGrid[i][j][1][0] = left
-            self.newGrid[i][j][2][0] = down
-            self.newGrid[i][j][3][0] = right
+            self.newGrid[i][j][0][0] = totalUp + self.transitionCost
+            self.newGrid[i][j][1][0] = totalLeft + self.transitionCost
+            self.newGrid[i][j][2][0] = totalDown + self.transitionCost
+            self.newGrid[i][j][3][0] = totalRight + self.transitionCost
       
       #update the grid with the new values for the next iteration
       self.grid = copy.deepcopy(self.newGrid)
@@ -223,15 +221,15 @@ class ValueIterationAgent:
 def main():
 
     window = tk.Tk()
-    readInput('gridConf.txt')
+    readInput('gridConf2.txt')
     grid = createGrid(HORIZONTAL,VERTICAL)
-    valIter = ValueIterationAgent(grid,TERMINAL,BOULDER,K,DISCOUNT,NOISE,TRANSITION_COST)
+    valIter = ValueIterationAgent(grid,TERMINAL,BOULDER,3,DISCOUNT,NOISE,TRANSITION_COST)
     grid = valIter.grid
     tests()
 
     terminal_states = TERMINAL
     boulder_states = BOULDER
-    num_iterations = K
+    num_iterations = 3
 
     draw_board(window, grid, [row[:-1] for row in terminal_states], boulder_states,
                max_reward(terminal_states), max_punishment(terminal_states), num_iterations)
