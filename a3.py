@@ -154,31 +154,31 @@ def main():
     valIterWindow.mainloop()
     
       
-      #now for Q-Learning
-      print("\n Now for Q-Learning\n")
-      qWindow = tk.Tk()
-      # readInput('gridConf.txt')
-      readInput('gridConfLong.txt')
-      #readInput('gridConfAlt.txt')
-      #readInput('gridConfAlt2.txt')
-      # readInput('gridConfSmall.txt')
-      grid = createGrid(HORIZONTAL,VERTICAL)
-      # print(grid)
-      tests()
-      qLearner = QLearner.QLearningAgent(grid,TERMINAL,BOULDER,ROBOTSTARTSTATE,K,EPISODES,ALPHA,DISCOUNT,NOISE,TRANSITION_COST)
-      qLearner.explore()
-      grid = qLearner.grid
-      # print(grid)
-      #tests()
-   
-      gg.draw_board(window, grid, [row[:-1] for row in TERMINAL], BOULDER,
-                  gg.max_reward(TERMINAL), gg.max_punishment(TERMINAL), EPISODES)
-      qWindow.mainloop()
-      qWindow = tk.Tk()
-      rl.draw_board(qWindow, grid, EPISODES, TERMINAL, BOULDER, rows, cols)
-      
-      
-      
-      qWindow.mainloop()
+    #now for Q-Learning
+    print("\n Now for Q-Learning\n")
+    qWindow = tk.Tk()
+    # readInput('gridConf.txt')
+    # readInput('gridConfLong.txt')
+    #readInput('gridConfAlt.txt')
+    #readInput('gridConfAlt2.txt')
+    # readInput('gridConfSmall.txt')
+    grid = createGrid(HORIZONTAL,VERTICAL)
+    # print(grid)
+    tests()
+    qLearner = QLearner.QLearningAgent(grid,TERMINAL,BOULDER,ROBOTSTARTSTATE,K,EPISODES,ALPHA,DISCOUNT,NOISE,TRANSITION_COST)
+    qLearner.explore()
+    grid = qLearner.grid
+    # print(grid)
+    #tests()
+ 
+    GUI.draw_board(qWindow, grid, [row[:-1] for row in TERMINAL], BOULDER,
+                GUI.max_reward(TERMINAL), GUI.max_punishment(TERMINAL), EPISODES)
+    qWindow.mainloop()
+    qWindow = tk.Tk()
+    RL_GUI.draw_board(qWindow, grid, EPISODES, TERMINAL, BOULDER, HORIZONTAL, VERTICAL)
+    
+    
+    
+    qWindow.mainloop()
 
 main()
