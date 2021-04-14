@@ -113,7 +113,7 @@ def draw_board(window, grid, iterations, terminal_states, boulder_states, rows, 
 
                         mid_x = (x1 + x2) / 2
                         mid_y = (y1 + y2) / 2
-                        print(color, value[0], value[0] / max_punishment, -1 * max_punishment)
+                        # print(color, value[0], value[0] / max_punishment, -1 * max_punishment)
                         if value[1] == '↑':  # Draw an up arrow
                             triangle_points = [mid_x, mid_y, x1, y1, x2, y1]
                             canvas.create_polygon(triangle_points, outline='white', fill='#%02x%02x%02x' % color)
