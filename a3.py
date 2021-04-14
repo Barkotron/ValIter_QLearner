@@ -154,6 +154,13 @@ def main():
     GUI.draw_board(result_k_valIterWindow, result_k_grid, [row[:-1] for row in TERMINAL], BOULDER,
                GUI.max_reward(TERMINAL), GUI.max_punishment(TERMINAL), RESULTS_K)
 
+    
+    #Q-LEARNING WITH EPISODES FROM GRIDCONF.TXT
+    #...
+
+    #Q-LEARNING WITH EPISODES FROM RESULTS.TXT
+    #...
+
 
     valIterWindow.mainloop()
     result_k_valIterWindow.mainloop()
