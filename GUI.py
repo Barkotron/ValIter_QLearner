@@ -144,4 +144,4 @@ def get_best_move(state):
     return max_index
 
 
-main()
+# main()
