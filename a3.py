@@ -3,6 +3,8 @@ import tkinter as tk
 import copy
 import GUI
 import ValueIteration
+import RL_GUI 
+import QLearner
 
 #global variables for now, we may do something else with them
 HORIZONTAL = 0
@@ -35,11 +37,34 @@ def createGrid(horizontal,vertical):
   return grid
   
 def readInput(filename='gridConf.txt'):
+    
+    #First cleaning up global variables in order to allow running multiple grids
+    global HORIZONTA
+    global VERTICA
+    global TERMINAL
+    global BOULDER
+    global ROBOTSTARTSTATE
+    global K
+    global EPISODES
+    global DISCOUNT
+    global NOISE
+    global TRANSITION_COST
+    HORIZONTAL = 0
+    VERTICAL = 0
+    TERMINAL = []
+    BOULDER = []
+    ROBOTSTARTSTATE = 0
+    K = 0
+    EPISODES = 0
+    ALPHA = 0
+    DISCOUNT = 0
+    NOISE = 0
+    TRANSITION_COST = 0
 
-  read = open(filename)
-  for line in read:
-    #print(f"Line: {line}")
-    parseLine(line)
+    read = open(filename)
+    for line in read:
+      #print(f"Line: {line}")
+      parseLine(line)
     
 def parseLine(line):
 
@@ -127,5 +152,33 @@ def main():
                GUI.max_reward(TERMINAL), GUI.max_punishment(TERMINAL), K)
 
     valIterWindow.mainloop()
+    
+      
+      #now for Q-Learning
+      print("\n Now for Q-Learning\n")
+      qWindow = tk.Tk()
+      # readInput('gridConf.txt')
+      readInput('gridConfLong.txt')
+      #readInput('gridConfAlt.txt')
+      #readInput('gridConfAlt2.txt')
+      # readInput('gridConfSmall.txt')
+      grid = createGrid(HORIZONTAL,VERTICAL)
+      # print(grid)
+      tests()
+      qLearner = QLearner.QLearningAgent(grid,TERMINAL,BOULDER,ROBOTSTARTSTATE,K,EPISODES,ALPHA,DISCOUNT,NOISE,TRANSITION_COST)
+      qLearner.explore()
+      grid = qLearner.grid
+      # print(grid)
+      #tests()
+   
+      gg.draw_board(window, grid, [row[:-1] for row in TERMINAL], BOULDER,
+                  gg.max_reward(TERMINAL), gg.max_punishment(TERMINAL), EPISODES)
+      qWindow.mainloop()
+      qWindow = tk.Tk()
+      rl.draw_board(qWindow, grid, EPISODES, TERMINAL, BOULDER, rows, cols)
+      
+      
+      
+      qWindow.mainloop()
 
 main()
