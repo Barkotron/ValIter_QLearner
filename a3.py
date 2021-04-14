@@ -175,7 +175,8 @@ def main():
                 GUI.max_reward(TERMINAL), GUI.max_punishment(TERMINAL), EPISODES)
     qWindow.mainloop()
     qWindow = tk.Tk()
-    RL_GUI.draw_board(qWindow, grid, EPISODES, TERMINAL, BOULDER, HORIZONTAL, VERTICAL)
+    RL_GUI.draw_board(qWindow, grid, EPISODES, [row[:-1] for row in TERMINAL], BOULDER,
+                      HORIZONTAL, VERTICAL, RL_GUI.get_max_reward(TERMINAL), RL_GUI.get_max_punishment(TERMINAL))
     
     
     

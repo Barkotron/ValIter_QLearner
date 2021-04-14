@@ -132,13 +132,13 @@ class QLearningAgent:
     # if state[0] < 0 or state[0] > len(self.grid) or state[1] < 0 or state[1] > len(self.grid[0]):
         # print(f"Move Check: {newState}")
         validMove = (newState[0] < rows and newState[0] >= 0 and newState[1] < cols and newState[1] >= 0)
-        print(f"validMove: {validMove}")
+        # print(f"validMove: {validMove}")
         for boulder in self.boulder:
             #Grid is x,y but boulder and terminal are y,x
             if boulder[0] == newState[0] and boulder[1] == newState[1]:
               validMove = False
         if not validMove:
-            print("Not Valid Move")
+            # print("Not Valid Move")
             newState = position
         return newState
     
@@ -198,9 +198,9 @@ class QLearningAgent:
             else:
                 #behave normally
                 chosenAction = self.getAction(position, episode)
-                print(f"\nChosenAction is: {chosenAction}")
+                # print(f"\nChosenAction is: {chosenAction}")
                 newState = self.move(position, chosenAction[1])
-                print(f"NewState is: {newState}")
+                # print(f"NewState is: {newState}")
                 self.update(position,chosenAction[1],newState)
                 position = newState
         print(f"\nReached Terminal State {terminated} Times.\n")
