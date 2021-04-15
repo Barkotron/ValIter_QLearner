@@ -19,6 +19,7 @@ DISCOUNT = 0
 NOISE = 0
 TRANSITION_COST = 0
 RESULTS_K = 0
+RESULTS_EPISODES = 0
 DECIMALS = 4
 
 def createGrid(horizontal,vertical):
@@ -156,44 +157,34 @@ def main():
     GUI.draw_board(result_k_valIterWindow, result_k_grid, [row[:-1] for row in TERMINAL], BOULDER,
                GUI.max_reward(TERMINAL), GUI.max_punishment(TERMINAL), RESULTS_K)
 
-    
     #Q-LEARNING WITH EPISODES FROM GRIDCONF.TXT
-    #...
-
-    #Q-LEARNING WITH EPISODES FROM RESULTS.TXT
-    #...
-
-
-    valIterWindow.mainloop()
+    qWindow = tk.Tk()
     
-    result_k_valIterWindow.mainloop()
-      
-    #now for Q-Learning
-    print("\n Now for Q-Learning\n")
-    qWindow = tk.Tk()
-    # readInput('gridConf.txt')
-    # readInput('gridConfLong.txt')
-    #readInput('gridConfAlt.txt')
-    #readInput('gridConfAlt2.txt')
-    # readInput('gridConfSmall.txt')
-    grid = createGrid(HORIZONTAL,VERTICAL)
-    # print(grid)
-    tests()
-    qLearner = QLearner.QLearningAgent(grid,TERMINAL,BOULDER,ROBOTSTARTSTATE,K,EPISODES,ALPHA,DISCOUNT,NOISE,TRANSITION_COST)
+    qGrid = createGrid(HORIZONTAL,VERTICAL)
+    qLearner = QLearner.QLearningAgent(qGrid,TERMINAL,BOULDER,ROBOTSTARTSTATE,EPISODES,ALPHA,DISCOUNT,NOISE,TRANSITION_COST)
     qLearner.explore()
-    grid = qLearner.grid
-    # print(grid)
-    #tests()
- 
-    GUI.draw_board(qWindow, grid, [row[:-1] for row in TERMINAL], BOULDER,
-                GUI.max_reward(TERMINAL), GUI.max_punishment(TERMINAL), EPISODES)
-    qWindow.mainloop()
-    qWindow = tk.Tk()
-    RL_GUI.draw_board(qWindow, grid, EPISODES, TERMINAL, BOULDER,
+    qGrid = qLearner.grid
+    
+    RL_GUI.draw_board(qWindow, qGrid, EPISODES, TERMINAL, BOULDER,
                       HORIZONTAL, VERTICAL, RL_GUI.get_max_reward(TERMINAL), RL_GUI.get_max_punishment(TERMINAL))
     
+    #Q-LEARNING WITH EPISODES FROM RESULTS.TXT
+    resultsQWindow = tk.Tk()
     
+    resultsQGrid = createGrid(HORIZONTAL,VERTICAL)
+    resultsQLearner = QLearner.QLearningAgent(resultsQGrid,TERMINAL,BOULDER,ROBOTSTARTSTATE,RESULTS_EPISODES,ALPHA,DISCOUNT,NOISE,TRANSITION_COST)
+    resultsQLearner.explore()
+    resultsQGrid = resultsQLearner.grid
+    
+    RL_GUI.draw_board(resultsQWindow, resultsQGrid, RESULTS_EPISODES, TERMINAL, BOULDER,
+                      HORIZONTAL, VERTICAL, RL_GUI.get_max_reward(TERMINAL), RL_GUI.get_max_punishment(TERMINAL))
+
+    valIterWindow.mainloop()    
+    result_k_valIterWindow.mainloop()
     
     qWindow.mainloop()
+    resultsQWindow.mainloop()
+    
+      
 
 main()

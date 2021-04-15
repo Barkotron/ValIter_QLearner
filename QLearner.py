@@ -6,7 +6,7 @@ import random
 
 class QLearningAgent:
 
-    def __init__(self,grid,terminal,boulder, startState, k, episodes, alpha, discount, noise, transitionCost):
+    def __init__(self,grid,terminal,boulder, startState, episodes, alpha, discount, noise, transitionCost):
     
     
         self.grid = grid
