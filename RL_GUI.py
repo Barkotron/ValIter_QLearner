@@ -1,35 +1,4 @@
-# Nathan Bock, 7793499
-
 import tkinter as tk
-
-# rows = 3
-# cols = 4
-# terminal_states = [[2, 3, 1], [1, 3, -1]]
-# boulder_states = [[1, 1]]
-# episodes = 10
-
-
-# def main():
-#     rows = 3
-#     cols = 4
-#     terminal_states = [[2, 3, 1], [1, 3, -1]]
-#     boulder_states = [[1, 1]]
-#     episodes = 10
-
-#     window = tk.Tk()
-#     canvas_width = 1000  # Width of the window
-#     canvas_height = 600  # Length of the window
-#     window.geometry('%dx%d+%d+%d' % (canvas_width, canvas_height, 0, 0))
-#     canvas = tk.Canvas(window, width=canvas_width, height=canvas_height,
-#                        background='black')  # Create a black background
-
-#     grid = [[[[0.2875529339214308, '↑'], [0.07213132262503723, '↓'], [0.6759885073047593, '→'], [0.29560509858739936, '←']], [[0.07754787072000002, '↑'], [0.2943971352238497, '↓'], [0.7981691400263904, '→'], [0.0, '←']], [[0.6998522103300707, '↑'], [0.2034447441872252, '↓'], [0.8972799169058675, '→'], [0.34353993153684204, '←']], [[1, '*']]],
-#             [[[0.5369742500372825, '↑'], [0.09271937915025358, '↓'], [0.11581353997565752, '→'], [0.20887501860806548, '←']], [[0.0, '↑'], [0.0, '↓'], [0.0, '→'], [0.0, '←']], [[0.5380970890300257, '↑'], [0.0, '↓'], [-0.32400000000000007, '→'], [0.07163575294244294, '←']], [[-1, '*']]],
-#             [[[0.39555687551417285, '↑'], [0.04911503971120812, '↓'], [0.00719192273850003, '→'], [0.14222899529156469, '←']], [[0.0, '↑'], [0.0, '↓'], [0.0, '→'], [0.07235819183488003, '←']], [[0.07163575294244294, '↑'], [0.0, '↓'], [0.0, '→'], [0.0, '←']], [[0.0, '↑'], [0.0, '↓'], [0.0, '→'], [0.0, '←']]]]
-
-#     draw_board(canvas, grid, episodes, terminal_states, boulder_states, rows, cols)
-
-#     window.mainloop()
 
 def get_max_reward(terminal_states):
     max_reward = float('-inf')
@@ -155,10 +124,8 @@ def draw_board(window, grid, iterations, terminal_states, boulder_states, rows, 
 
     canvas.create_text(int(canvas_width / 2), canvas_height - bottom_space / 2,
                        font=('TkDefaultFont', int(bottom_space / 2)),
-                       text=('VALUE AFTER ' + str(iterations) + ' ITERATIONS'),
+                       text=('VALUE AFTER ' + str(iterations) + ' EPISODES'),
                        fill='white')  # Write text at the bottom of the canvas
 
     canvas.pack()
 
-
-# main()
