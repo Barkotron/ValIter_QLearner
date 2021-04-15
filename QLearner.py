@@ -72,7 +72,7 @@ class QLearningAgent:
             bestOption = self.getValue(state)
             #If the best option available to us is 0, then choose a random direction
             if bestOption[0] == 0:
-                print("Choosing Random")
+                # print("Choosing Random")
                 temp = self.grid[state[0]][state[1]]
                 bestOption = temp[random.randrange(3)]
         

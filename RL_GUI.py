@@ -76,14 +76,16 @@ def draw_board(window, grid, iterations, terminal_states, boulder_states, rows, 
 
     for row in range(rows):  # Loop through the rows of the grid
         for col in range(cols):  # Loop through the columns of the grid
-            if [rows - row - 1, col] not in boulder_states:  # If it's not a boulder state
+            if [row, col] not in boulder_states:  # If it's not a boulder state
                 x1 = edge_dist + col * ((canvas_width - 2 * edge_dist) / cols)  # Top left x coordinate of the rectangle
-                y1 = edge_dist + row * (
-                            (canvas_height - edge_dist - bottom_space) / rows)  # Top left y coordinate of the rectangle
+                # y1 = edge_dist + row * (
+                #             (canvas_height - edge_dist - bottom_space) / rows)  # Top left y coordinate of the rectangle
+                y1 = edge_dist + (rows - row - 1) * ((canvas_height - edge_dist - bottom_space) / rows)
                 x2 = x1 + ((canvas_width - 2 * edge_dist) / cols)  # Bottom right x coordinate of the rectangle
-                y2 = y1 + ((canvas_height - edge_dist - bottom_space) / rows)  # Bottom right y coordinate of the rectangle
-
-                if is_terminal_state(terminal_states, rows - row - 1, col):  # If this cell is a terminal state
+                # y2 = y1 + ((canvas_height - edge_dist - bottom_space) / rows)  # Bottom right y coordinate of the rectangle
+                y2 = y1 + ((canvas_height - edge_dist - bottom_space) / rows)
+                
+                if is_terminal_state(terminal_states, row , col):  # If this cell is a terminal state
                     value = grid[row][col][0][0]
                     if value > 0:  # Best value is positive, so draw the rectangle in green
                         canvas.create_rectangle(x1, y1, x2, y2, outline='white',
@@ -144,8 +146,10 @@ def draw_board(window, grid, iterations, terminal_states, boulder_states, rows, 
                                                fill='white')  # Print the best value in the middle of the cell
             else:  # This is a boulder state
                 x1 = edge_dist + col * ((canvas_width - 2 * edge_dist) / cols)
-                y1 = edge_dist + row * ((canvas_height - edge_dist - bottom_space) / rows)
+                # y1 = edge_dist + row * ((canvas_height - edge_dist - bottom_space) / rows)
+                y1 = edge_dist + (rows - row - 1) * ((canvas_height - edge_dist - bottom_space) / rows)
                 x2 = x1 + ((canvas_width - 2 * edge_dist) / cols)
+                # y2 = y1 + ((canvas_height - edge_dist - bottom_space) / rows)
                 y2 = y1 + ((canvas_height - edge_dist - bottom_space) / rows)
                 canvas.create_rectangle(x1, y1, x2, y2, fill='grey', outline='white')
 
