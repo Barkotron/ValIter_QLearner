@@ -61,7 +61,7 @@ def draw_board(window, grid, terminal, boulders, max_reward, max_punishment, ite
                                             fill='#%02x%02x%02x' % (int(200 * min(best_value / max_punishment, -1 * max_punishment)), 0, 0))  # Draw the rectangle of this cell
 
                 canvas.create_text((x1 + x2) / 2, (y1 + y2) / 2, text=str(round(best_value, 2)),
-                                   font=('TkDefaultFont', int(0.25 * ((canvas_width - 2 * edge_dist) / cols))), fill='white')  # Print the best value in the middle of the cell
+                                   font=('TkDefaultFont', int(0.2 * ((canvas_width - 2 * edge_dist) / cols))), fill='white')  # Print the best value in the middle of the cell
 
                 if [row, col] in terminal:  # If this cell is a terminal state
                     #print("TERMINAL: ", row, col)
@@ -102,7 +102,7 @@ def draw_board(window, grid, terminal, boulders, max_reward, max_punishment, ite
                 y2 = y1 + ((canvas_height - edge_dist - bottom_space) / rows)
                 canvas.create_rectangle(x1, y1, x2, y2, fill='grey', outline='white')
 
-    canvas.create_text(int(canvas_width / 2), canvas_height - bottom_space / 2, font=('TkDefaultFont', int(bottom_space / 2)),
+    canvas.create_text(int(canvas_width / 2), canvas_height - bottom_space / 2, font=('TkDefaultFont', int(bottom_space / 2.5)),
                        text=('VALUE AFTER ' + str(iterations) + ' ITERATIONS'), fill='white')  # Write text at the bottom of the canvas
 
     canvas.pack()

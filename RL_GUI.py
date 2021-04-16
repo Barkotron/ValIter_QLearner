@@ -90,28 +90,28 @@ def draw_board(window, grid, iterations, terminal_states, boulder_states, rows, 
                             canvas.create_polygon(triangle_points, outline='white', fill='#%02x%02x%02x' % color)
                             canvas.create_text((x1 + x2) / 2, y1 + (y2 - y1) / 5, text=str(round(value[0], 2)),
                                                font=(
-                                               'TkDefaultFont', int(0.15 * ((canvas_width - 2 * edge_dist) / cols))),
+                                               'TkDefaultFont', int(0.12 * ((canvas_width - 2 * edge_dist) / cols))),
                                                fill='white')  # Print the best value in the middle of the cell
                         elif value[1] == '↓':  # Draw a down arrow
                             triangle_points = [mid_x, mid_y, x1, y2, x2, y2]
                             canvas.create_polygon(triangle_points, outline='white', fill='#%02x%02x%02x' % color)
                             canvas.create_text((x1 + x2) / 2, y2 - (y2 - y1) / 5, text=str(round(value[0], 2)),
                                                font=(
-                                                   'TkDefaultFont', int(0.15 * ((canvas_width - 2 * edge_dist) / cols))),
+                                                   'TkDefaultFont', int(0.12 * ((canvas_width - 2 * edge_dist) / cols))),
                                                fill='white')  # Print the best value in the middle of the cell
                         elif value[1] == '←':  # Draw a left arrow
                             triangle_points = [mid_x, mid_y, x1, y1, x1, y2]
                             canvas.create_polygon(triangle_points, outline='white', fill='#%02x%02x%02x' % color)
                             canvas.create_text(x1 + (x2 - x1) / 5, (y1 + y2) / 2, text=str(round(value[0], 2)),
                                                font=(
-                                               'TkDefaultFont', int(0.15 * ((canvas_width - 2 * edge_dist) / cols))),
+                                               'TkDefaultFont', int(0.12 * ((canvas_width - 2 * edge_dist) / cols))),
                                                fill='white')  # Print the best value in the middle of the cell
                         elif value[1] == '→':  # Draw a right arrow
                             triangle_points = [mid_x, mid_y, x2, y1, x2, y2]
                             canvas.create_polygon(triangle_points, outline='white', fill='#%02x%02x%02x' % color)
                             canvas.create_text(x2 - (x2 - x1) / 5, (y1 + y2) / 2, text=str(round(value[0], 2)),
                                                font=(
-                                               'TkDefaultFont', int(0.15 * ((canvas_width - 2 * edge_dist) / cols))),
+                                               'TkDefaultFont', int(0.12 * ((canvas_width - 2 * edge_dist) / cols))),
                                                fill='white')  # Print the best value in the middle of the cell
             else:  # This is a boulder state
                 x1 = edge_dist + col * ((canvas_width - 2 * edge_dist) / cols)
@@ -123,7 +123,7 @@ def draw_board(window, grid, iterations, terminal_states, boulder_states, rows, 
                 canvas.create_rectangle(x1, y1, x2, y2, fill='grey', outline='white')
 
     canvas.create_text(int(canvas_width / 2), canvas_height - bottom_space / 2,
-                       font=('TkDefaultFont', int(bottom_space / 2)),
+                       font=('TkDefaultFont', int(bottom_space / 2.5)),
                        text=('VALUE AFTER ' + str(iterations) + ' EPISODES'),
                        fill='white')  # Write text at the bottom of the canvas
 
