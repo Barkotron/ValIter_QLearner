@@ -1,3 +1,9 @@
+'''
+This project implements both value iteration and Q-learning.
+This file reads in the specification of a grid to test both agents.
+1. A Value Iteration Agent to a fixed depth k.
+2. A A Q-Value Learner with Episodes.
+'''
 import re
 import tkinter as tk
 import copy
@@ -165,6 +171,7 @@ def main():
     qLearner.explore()
     qGrid = qLearner.grid
     
+    qWindow.title(f"Q-Learning after {EPISODES} Episodes")
     RL_GUI.draw_board(qWindow, qGrid, EPISODES, TERMINAL, BOULDER,
                       HORIZONTAL, VERTICAL, RL_GUI.get_max_reward(TERMINAL), RL_GUI.get_max_punishment(TERMINAL))
     
@@ -176,8 +183,10 @@ def main():
     resultsQLearner.explore()
     resultsQGrid = resultsQLearner.grid
     
+    resultsQWindow.title(f"Q-Learning after {RESULTS_EPISODES} Episodes")
     RL_GUI.draw_board(resultsQWindow, resultsQGrid, RESULTS_EPISODES, TERMINAL, BOULDER,
                       HORIZONTAL, VERTICAL, RL_GUI.get_max_reward(TERMINAL), RL_GUI.get_max_punishment(TERMINAL))
+
 
     valIterWindow.mainloop()    
     result_k_valIterWindow.mainloop()
