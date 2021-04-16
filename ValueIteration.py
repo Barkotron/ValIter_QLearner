@@ -15,8 +15,17 @@ class ValueIterationAgent:
 
     self.iterate()
 
-  #of 1 state
+  
   def getValue(self, state, target):
+    '''
+    gets the value of a target state, if target is unreachable (like an edge or a boulder) then the current states value is returned
+
+    Args:
+      state(x,y): current state whose value is being updated
+      target(x,y): target state to get value from
+    Return:
+      (float): maximum of the 4 values in a state
+    '''
     
     #if you're trying to move into a boulder: 'bounce off' and stay where you tried to move from
     for boulder in self.boulder:
@@ -26,27 +35,35 @@ class ValueIterationAgent:
                 values.append(val[0])
               return max(values)
 
-    # if state we're checking is outside the grid
+    # if state we're checking is outside the grid: stay where you tried to move from
     if target[0] < 0 or target[0] >= len(self.grid) or target[1] < 0 or target[1] >= len(self.grid[0]):
       values = []
       for val in self.grid[state[0]][state[1]]:
         values.append(val[0])
       return max(values)
     
-    else:
+    else: # get max value of target state
       values = []
       for val in self.grid[target[0]][target[1]]:
         values.append(val[0])
       return max(values)
   
   def iterate(self):
+    '''
+    the value iteration algorithm. updates its own grid member
+
+    Args:
+      none
+    Return:
+      none
+    '''
     
     rows = len(self.grid)
     cols = len(self.grid[0])
 
     for iteration in range(1,self.k):
       
-      #Copy the grid so we aren't using values that were updated in the same iteration
+      #Copy the grid so we aren't using values that were updated within the same iteration
       self.newGrid = copy.deepcopy(self.grid)
       
       for i in range(rows):
@@ -68,23 +85,17 @@ class ValueIterationAgent:
             mainProb = (1-self.noise) #probability for desired direction
             noiseProb = self.noise/2 #probability for each of the 2 'noise directions'
 
-            upValid = True#i+1 < rows
-            downValid = True#i-1 >= 0
-            leftValid = True#j-1 >= 0
-            rightValid = True#j+1 < cols
+            #up
+            up = ((self.discount*(self.getValue((i,j),(i+1,j)))))
 
-            
-            if upValid: #up
-              up = ((self.discount*(self.getValue((i,j),(i+1,j)))))
+            #left
+            left = ((self.discount*(self.getValue((i,j),(i,j-1)))))
 
-            if leftValid:#left
-              left = ((self.discount*(self.getValue((i,j),(i,j-1)))))
+            #down
+            down = ((self.discount*(self.getValue((i,j),(i-1,j)))))
 
-            if downValid:#down
-              down = ((self.discount*(self.getValue((i,j),(i-1,j)))))
-
-            if rightValid:#right
-              right = ((self.discount*(self.getValue((i,j),(i,j+1)))))
+            #right
+            right = ((self.discount*(self.getValue((i,j),(i,j+1)))))
 
             totalUp = mainProb*up + noiseProb*left + noiseProb*right
             totalLeft = mainProb*left + noiseProb*up + noiseProb*down

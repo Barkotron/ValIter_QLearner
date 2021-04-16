@@ -3,6 +3,9 @@ This project implements both value iteration and Q-learning.
 This file reads in the specification of a grid to test both agents.
 1. A Value Iteration Agent to a fixed depth k.
 2. A A Q-Value Learner with Episodes.
+
+COMP4190 A3
+Jackson Barker, Tyler Brown
 '''
 import re
 import tkinter as tk
@@ -12,7 +15,7 @@ import ValueIteration
 import RL_GUI 
 import QLearner
 
-#global variables for now, we may do something else with them
+#---Global Variables---
 HORIZONTAL = 0
 VERTICAL = 0
 TERMINAL = []
@@ -26,9 +29,17 @@ NOISE = 0
 TRANSITION_COST = 0
 RESULTS_K = 0
 RESULTS_EPISODES = 0
-DECIMALS = 4
 
 def createGrid(horizontal,vertical):
+  '''
+  creates a grid based off of the horizontal and vertical values given from a grid configuration file
+
+  Args:
+    filename(string): name of the .txt file to be read
+  Return:
+    the grid, in the the form of a list(rows) of lists(cols) where each entry is another list of lists containing
+    the value and direction of moving to a neighbouring square
+  '''
 
   grid = []
   for h in range(horizontal):
@@ -41,10 +52,17 @@ def createGrid(horizontal,vertical):
       row.append(square)
     grid.append(row)
 
-  #print(grid)
   return grid
 
 def readResults(filename='results.txt'):
+  '''
+  Reads a results file and passes 1 line at a time to parseLine()
+
+  Args:
+    filename(string): name of the .txt file to be read
+  Return:
+    none
+  '''
   results = open(filename)
 
   for line in results:
@@ -52,12 +70,28 @@ def readResults(filename='results.txt'):
 
   
 def readInput(filename='gridConf.txt'):
+  '''
+  Reads a grid configuration file and passes 1 line at a time to parseLine()
+
+  Args:
+    filename(string): name of the .txt file to be read
+  Return:
+    none
+  '''
 
   read = open(filename)
   for line in read:
     parseLine(line)
     
 def parseLine(line):
+  '''
+  Reads in a single line from a grid configuration or results file and picks out the important information
+
+  Args:
+    line(string): a line from a grid configuration or results file
+  Return:
+    none
+  '''
 
   # remove everything that isn't a title or value
   tokens = re.split('=|\n|\s|,|{|}',line)
@@ -117,9 +151,7 @@ def parseLine(line):
   else:
     print("Unknown Field")
 
-  #print(tokens)
-
-def tests():
+def printGlobals():
   print("---Global Variables---")
   print(f"Horizontal: {HORIZONTAL}")
   print(f"Vertical: {VERTICAL}")
@@ -139,7 +171,7 @@ def main():
     
     readInput('gridConf.txt')
     readResults('results.txt')
-    tests()
+    printGlobals()
 
     #VALUE ITERATION WITH K FROM GRIDCONF.TXT
     valIterWindow = tk.Tk()
@@ -165,7 +197,7 @@ def main():
 
     #Q-LEARNING WITH EPISODES FROM GRIDCONF.TXT
     qWindow = tk.Tk()
-    
+    qWindow.title(f"Q-Learning after {EPISODES} episodes")
     qGrid = createGrid(HORIZONTAL,VERTICAL)
     qLearner = QLearner.QLearningAgent(qGrid,TERMINAL,BOULDER,ROBOTSTARTSTATE,EPISODES,ALPHA,DISCOUNT,NOISE,TRANSITION_COST)
     qLearner.explore()
@@ -177,7 +209,7 @@ def main():
     
     #Q-LEARNING WITH EPISODES FROM RESULTS.TXT
     resultsQWindow = tk.Tk()
-    
+    resultsQWindow.title(f"Q-Learning after {RESULTS_EPISODES} episodes")
     resultsQGrid = createGrid(HORIZONTAL,VERTICAL)
     resultsQLearner = QLearner.QLearningAgent(resultsQGrid,TERMINAL,BOULDER,ROBOTSTARTSTATE,RESULTS_EPISODES,ALPHA,DISCOUNT,NOISE,TRANSITION_COST)
     resultsQLearner.explore()
