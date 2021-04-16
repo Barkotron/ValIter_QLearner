@@ -83,7 +83,7 @@ def parseLine(line):
   Return:
     none
   '''
-  
+
   # remove everything that isn't a title or value
   tokens = re.split('=|\n|\s|,|{|}',line)
 
@@ -142,7 +142,7 @@ def parseLine(line):
   else:
     print("Unknown Field")
 
-def tests():
+def printGlobals():
   print("---Global Variables---")
   print(f"Horizontal: {HORIZONTAL}")
   print(f"Vertical: {VERTICAL}")
@@ -162,7 +162,7 @@ def main():
     
     readInput('gridConf.txt')
     readResults('results.txt')
-    tests()
+    printGlobals()
 
     #VALUE ITERATION WITH K FROM GRIDCONF.TXT
     valIterWindow = tk.Tk()
