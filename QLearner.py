@@ -1,7 +1,6 @@
 import random
 
 class QLearningAgent:
-
     def __init__(self,grid,terminal,boulder, startState, episodes, alpha, discount, noise, transitionCost):
         
         self.grid = grid
@@ -14,24 +13,67 @@ class QLearningAgent:
         self.boulder = boulder
         self.terminal = terminal
     
-    #of 1 state
     def getValue(self, state):
+        '''
+        Gets the best direction of a state and its value
+
+        Parameters
+        ----------
+        state: list
+            The grid coordinates (row,col) of the current state
+
+        Returns
+        -------
+        best : list
+            The direction with the highest value, represented as the float value and a char arrow
+
+        '''
         best = self.grid[state[0]][state[1]][0]
         for val in self.grid[state[0]][state[1]]:
             if val[0] > best[0]:
                 best = val
         return best
     
-    #calculates the Q-Value for the update method
-    def getQValue(self, state, action):    
-        oldValue = self.transitionCost + (self.getValue(state)[0]*(1-self.discount))
-        newValue = self.transitionCost + (self.getValue(action)[0]*(self.discount))
+    def getQValue(self, oldState, newState): 
+        '''
+        Calculates the Q-Value for the update method
+
+        Parameters
+        ----------
+        oldState: list
+            The grid coordinates (row,col) of the previous state
+        newState : list
+            The grid coordinates (row,col) of the next state
+
+        Returns
+        -------
+        qValue : float
+            The new q-value of the previous state that will be updated
+
+        '''
+        oldValue = self.transitionCost + (self.getValue(oldState)[0]*(1-self.discount))
+        newValue = self.transitionCost + (self.getValue(newState)[0]*(self.discount))
         qValue = oldValue + newValue
         return qValue
     
-    
-    #Chooses which direction the machine will try to move
     def getPolicy(self, state, episode):
+        '''
+        Chooses which direction the machine will try to move
+
+        Parameters
+        ----------
+        state: list
+            The grid coordinates (row,col) of the current state
+        episode : int
+            How many episodes have been completed
+
+        Returns
+        -------
+        chosenOption : list
+            The coordinates of the next state the machine will try to move to
+
+        '''
+        
         #very high chance of random action at first, decreasing every episode
         randomActionChance = 0.75 - (episode/self.episodes)
         if random.random() < randomActionChance:
@@ -39,8 +81,9 @@ class QLearningAgent:
             temp = self.grid[state[0]][state[1]]
             bestOption = temp[random.randrange(3)]
         else:
+            #choose the best option
             bestOption = self.getValue(state)
-            #If the best option available to us is 0, then choose a random direction
+            #If the best option available to us has a value of 0, then choose a random direction
             if bestOption[0] == 0:
                 temp = self.grid[state[0]][state[1]]
                 bestOption = temp[random.randrange(3)]
@@ -75,8 +118,23 @@ class QLearningAgent:
         return chosenOption
     
         
-    #will return the state that it will be in after the move
     def move(self, position, direction):
+        '''
+        Returns the coordinates of the state that the machine will be in after the move
+
+        Parameters
+        ----------
+        position : list
+            The grid coordinates (row,col) of the current state
+        direction : char
+            A char arrow representing which direction the machine will attempt to move in
+
+        Returns
+        -------
+        newState : list
+            The grid coordinates (row,col) of the state where the machine will end up in after the move
+
+        '''
         if direction == '↑':
             newState = [position[0]+1,position[1]]
         elif direction == '←':
@@ -100,8 +158,24 @@ class QLearningAgent:
         return newState
     
     
-    #updates the q-values of the previous state
     def update(self, position,direction,newState):
+        '''
+        Updates the q-values of the previous state
+
+        Parameters
+        ----------
+        position : list
+            The grid coordinates (row,col) of the previous state.
+        direction : char arrow
+            A char arrow representing which direction the machine is moveing in.
+        newState : list
+            The grid coordinates (row,col) of the new state.
+
+        Returns
+        -------
+        None.
+
+        '''     
         qValue = self.getQValue(position, newState)  
         if direction == '↑':
             self.grid[position[0]][position[1]][0][0] = qValue
@@ -114,16 +188,30 @@ class QLearningAgent:
         
     
     def explore(self):
+        '''
+        Will learn by exploring its enviroment for n episodes
+        
+        Parameters
+        ----------
+        None.
+        
+        Returns
+        -------
+        None.
+
+        '''
         position = self.startState
         episode = 0
-        while episode < self.episodes:      
+        while episode < self.episodes:  
+            #check if in terminal state
             terminal = False
             for term in self.terminal:
                 if term[0] == position[0] and term[1] == position[1]:
                   terminal = True
+                  
             if terminal:
-                episode = episode+1
-                #exit and try again
+                #go to the start and try again
+                episode = episode+1               
                 position = self.startState
             else:
                 #behave normally
