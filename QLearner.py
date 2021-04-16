@@ -13,7 +13,6 @@ class QLearningAgent:
         self.transitionCost = transitionCost
         self.boulder = boulder
         self.terminal = terminal
-        
     
     #of 1 state
     def getValue(self, state):
@@ -23,7 +22,7 @@ class QLearningAgent:
                 best = val
         return best
     
-      
+    #calculates the Q-Value for the update method
     def getQValue(self, state, action):    
         oldValue = self.transitionCost + (self.getValue(state)[0]*(1-self.discount))
         newValue = self.transitionCost + (self.getValue(action)[0]*(self.discount))
@@ -32,8 +31,9 @@ class QLearningAgent:
     
     
     #Chooses which direction the machine will try to move
-    def getAction(self, state):
-        randomActionChance = 0.10
+    def getPolicy(self, state, episode):
+        #very high chance of random action at first, decreasing every episode
+        randomActionChance = 0.75 - (episode/self.episodes)
         if random.random() < randomActionChance:
             #don't always choose the best option to better explore
             temp = self.grid[state[0]][state[1]]
@@ -44,8 +44,7 @@ class QLearningAgent:
             if bestOption[0] == 0:
                 temp = self.grid[state[0]][state[1]]
                 bestOption = temp[random.randrange(3)]
-        
-        
+                
         #Now that we know which way we want to go, determine if we get blown off course
         chance = random.random()
         if chance > self.noise:
@@ -116,21 +115,19 @@ class QLearningAgent:
     
     def explore(self):
         position = self.startState
-        terminated = 0
-        #leave this I am getting clarification
-        # for episode in range(self.episodes): 
-        while terminated < self.episodes:      
+        episode = 0
+        while episode < self.episodes:      
             terminal = False
             for term in self.terminal:
                 if term[0] == position[0] and term[1] == position[1]:
                   terminal = True
             if terminal:
-                terminated = terminated+1
+                episode = episode+1
                 #exit and try again
                 position = self.startState
             else:
                 #behave normally
-                chosenAction = self.getAction(position)
+                chosenAction = self.getPolicy(position, episode)
                 newState = self.move(position, chosenAction[1])
                 self.update(position,chosenAction[1],newState)
                 position = newState
