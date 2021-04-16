@@ -3,6 +3,9 @@ This project implements both value iteration and Q-learning.
 This file reads in the specification of a grid to test both agents.
 1. A Value Iteration Agent to a fixed depth k.
 2. A A Q-Value Learner with Episodes.
+
+COMP4190 A3
+Jackson Barker, Tyler Brown
 '''
 import re
 import tkinter as tk
