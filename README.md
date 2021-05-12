@@ -1,5 +1,6 @@
-# COMP4190A3
-COMP4190 Assignment 3 - Jackson Barker, Tyler Brown
+Jackson Barker, Tyler Brown
+
+A Value Iteration Agent and Q-Learning agent for navigating a grid towards a reward cell
 
 To run: 'Python a3.py'
 
