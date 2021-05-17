@@ -1,8 +1,12 @@
-Jackson Barker, Tyler Brown
+## Value Iteration and Q-Learning Agents
+
+#### Jackson Barker, Tyler Brown
 
 A Value Iteration Agent and Q-Learning agent for navigating a grid towards a reward cell
 
-To run: 'Python a3.py'
+### To run: 
+
+Enter 'Python a3.py' in the command line
 
 4 windows will come up:
 
